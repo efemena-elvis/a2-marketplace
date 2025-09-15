@@ -1,0 +1,86 @@
+image: node:16
+
+stages:
+  - install
+  - build
+  - deploy
+
+# Job for installing dependencies
+install:
+  stage: install
+  script:
+    - npm install --legacy-peer-deps
+  only:
+    - staging
+    - main
+
+# Job for building on staging environment
+build_staging:
+  stage: build
+  script:
+    - npm ci --legacy-peer-deps
+    - npm run build:staging
+  artifacts:
+    paths:
+      - dist/
+  only:
+    - staging
+  needs:
+    - install
+
+# Job for building on production environment
+build_production:
+  stage: build
+  script:
+    - npm ci --legacy-peer-deps
+    - npm run build:prod
+  artifacts:
+    paths:
+      - dist/
+  only:
+    - main
+  needs:
+    - install
+
+# Job for deploying to staging
+deploy_staging:
+  image:
+    name: amazon/aws-cli:latest
+    entrypoint:
+      - "/usr/bin/env"
+  stage: deploy
+  script:
+    - echo "Deploying to Staging Environment"
+    - echo "$STAGING_S3_BUCKET"
+    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile gitlab
+    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile gitlab
+    - aws configure set region $AWS_DEFAULT_REGION --profile gitlab
+    - aws s3 sync dist/ s3://$STAGING_S3_BUCKET/ --acl public-read --delete --profile gitlab
+    - aws cloudfront create-invalidation --distribution-id $STAGING_CLOUDFRONT_DISTRIBUTION --paths "/*" --profile gitlab
+  environment:
+    name: staging
+  only:
+    - staging
+  needs:
+    - build_staging
+
+# Job for deploying to production
+deploy_production:
+  image:
+    name: amazon/aws-cli:latest
+    entrypoint:
+      - "/usr/bin/env"
+  stage: deploy
+  script:
+    - echo "Deploying to Production Environment"
+    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile gitlab
+    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile gitlab
+    - aws configure set region $MAIN_AWS_DEFAULT_REGION --profile gitlab
+    - aws s3 sync dist/ s3://$MAIN_S3_BUCKET/ --acl public-read --delete --region $MAIN_AWS_DEFAULT_REGION --profile gitlab
+    - aws cloudfront create-invalidation --distribution-id $MAIN_CLOUDFRONT_DISTRIBUTION --paths "/*" --profile gitlab
+  environment:
+    name: production
+  only:
+    - main
+  needs:
+    - build_production

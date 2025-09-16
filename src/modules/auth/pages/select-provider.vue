@@ -1,6 +1,6 @@
 <template>
   <div
-    class="auth-layout relative h-screen py-[50px] px-[100px] xl:px-[66px] lg:px-[50px] md:px-7 sm:px-3"
+    class="auth-layout relative px-[100px] xl:px-[66px] lg:px-[50px] md:px-7 sm:px-3"
   >
     <!-- CLOSE TRIGGER -->
     <div class="close-trigger" @click="router.push('/')">
@@ -24,32 +24,15 @@
 
       <div class="">
         <div class="provider-row mb-8">
-          <div class="provider-item">
-            <img src="@/shared/assets/images/zoho.png" alt="zoho" />
-            <div class="provider-text">Zoho</div>
-          </div>
-
-          <div class="provider-item">
-            <img
-              src="@/shared/assets/images/sage.png"
-              alt="sage"
-              class="!w-[70%]"
-            />
-            <div class="provider-text">Sage</div>
-          </div>
-
-          <div class="provider-item">
-            <img src="@/shared/assets/images/quickbooks.png" alt="quickbooks" />
-            <div class="provider-text">QuickBooks</div>
-          </div>
-
-          <div class="provider-item">
-            <img
-              src="@/shared/assets/images/salesforce.png"
-              alt="salesforce"
-              class="!w-[70%]"
-            />
-            <div class="provider-text">Salesforce</div>
+          <div
+            class="provider-item"
+            :class="{ 'provider-item-selected': provider.active }"
+            v-for="provider in providers"
+            :key="provider.name"
+            @click="selectProvider(provider)"
+          >
+            <img :src="renderImg(provider.logo)" :alt="provider.name" />
+            <div class="provider-text">{{ provider.name }}</div>
           </div>
         </div>
 
@@ -73,49 +56,90 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useColor } from "@/shared/composables/useColor";
+import { useString } from "@/shared/composables/useString";
+
+const { renderImg } = useString();
 
 const router = useRouter();
 const { setPageBackgroundColor } = useColor();
+
+const providers = ref([
+  {
+    name: "Zoho",
+    slug: "zoho",
+    logo: "zoho.png",
+    active: true,
+  },
+  {
+    name: "Sage",
+    slug: "sage",
+    logo: "sage.png",
+    active: false,
+  },
+  {
+    name: "QuickBooks",
+    slug: "quickbooks",
+    logo: "quickbooks.png",
+    active: false,
+  },
+  {
+    name: "Salesforce",
+    slug: "salesforce",
+    logo: "salesforce.png",
+    active: false,
+  },
+]);
+
+const selectProvider = (provider: any) => {
+  providers.value = providers.value.map((p) => ({
+    ...p,
+    active: p.name === provider.name,
+  }));
+};
 
 onMounted(() => setPageBackgroundColor("#EDF0F2"));
 </script>
 
 <style lang="scss" scoped>
 .auth-layout {
-  @apply h-screen flex flex-col justify-center items-center;
+  @apply relative mt-20 xl:mt-12 flex flex-col justify-start items-center;
 
   .close-trigger {
-    @apply w-12 h-12 rounded-full bg-primary-100 cursor-pointer absolute top-8 right-8 z-10 flex justify-center items-center hover:bg-red-100/80 transition duration-300 ease-in-out;
+    @apply size-12 md:size-10 rounded-full bg-primary-100 cursor-pointer fixed top-8 sm:top-6 right-8 sm:right-4 z-10 flex justify-center items-center hover:bg-red-100/80 transition duration-300 ease-in-out;
 
     .icon {
-      @apply text-3xl text-primary-800;
+      @apply text-3xl md:text-2xl text-primary-800;
     }
   }
 
   .container-wrapper {
-    @apply w-[46%] px-12 py-10 rounded-xl bg-neutral-10 shadow-sm;
+    @apply w-[44%] xl:w-[50%] lg:w-[60%] mdLg:w-4/5 sm:w-[96%] xs:w-[98%] p-14 lg:p-12 sm:py-10 sm:px-8 xs:px-5 rounded-xl bg-neutral-10 shadow-sm mb-20;
 
     .brand-logo {
       img {
-        @apply size-20 sm:w-[70px];
+        @apply size-20 lg:size-16 sm:size-14;
       }
     }
 
     .provider-row {
-      @apply grid grid-cols-2 gap-6;
+      @apply grid grid-cols-2 sm:grid-cols-1 gap-6;
 
       .provider-item {
-        @apply w-full h-auto px-7 py-4 relative flex flex-col justify-center items-center gap-y-4 rounded-xl border border-grey-300 cursor-pointer hover:bg-grey-50/60 hover:border-primary-900 transition duration-300 ease-in-out;
+        @apply w-full h-auto p-7 relative flex flex-col justify-center items-center gap-y-4 rounded-xl border border-grey-300 cursor-pointer hover:bg-grey-50/60 hover:border-primary-800/50 transition duration-300 ease-in-out;
+
+        &-selected {
+          @apply border-2 border-primary-800;
+        }
 
         img {
-          @apply w-4/5 h-auto;
+          @apply w-auto h-[40px];
         }
 
         .provider-text {
-          @apply text-sm font-medium text-center text-primary-900;
+          @apply text-sm sm:text-base font-medium text-center text-primary-900;
         }
       }
     }

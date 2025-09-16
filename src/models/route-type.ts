@@ -29,14 +29,6 @@ export interface IRouteGroupType {
   active: boolean;
 }
 
-export interface ISidebarRouteType {
-  home: IRouteGroupType[];
-  payments: IRouteGroupType[];
-  transfers: IRouteGroupType[];
-  commerce: IRouteGroupType[];
-  settings: IRouteGroupType[];
-}
-
 export interface ISideNavType {
   routeTitle: string;
   routeIcon: string;

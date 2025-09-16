@@ -4,12 +4,12 @@ import middlewares from "@/middlewares";
 // IMPORTED ROUTES FROM RESPECTIVE APPLICATION MODULES
 import authRoutes from "@/modules/auth";
 import landingRoutes from "@/modules/landing";
-// import dashboardRoutes from "@/modules/dashboard";
+import dashboardRoutes from "@/modules/dashboard";
 
 const routes = [
   ...authRoutes,
   ...landingRoutes,
-  // ...dashboardRoutes,
+  ...dashboardRoutes,
   {
     path: "/*",
     name: "NotFoundError",

@@ -8,7 +8,7 @@
       </div>
 
       <div class="description-text">
-        A2 marketplace helps you stay compliant; easily and seamlessly
+        A2 marketplace helps you stay compliant easily and seamlessly
       </div>
 
       <div class="cta-row">
@@ -96,14 +96,14 @@ const feature = ref();
   @apply h-screen pt-12 flex justify-between items-center gap-x-4;
 
   .content-area {
-    @apply flex flex-col justify-center items-start text-primary-900 w-1/2;
+    @apply flex flex-col justify-center items-start md:items-center text-primary-900 w-[650px] xl:w-[70%] lg:w-[80%] md:w-full;
 
     .title-text {
-      @apply font-normal text-[52px] leading-[62px] mb-5;
+      @apply font-normal text-[52px] xl:text-[44px] lg:text-[36px] md:text-[40px] sm:text-[32px] leading-[62px] xl:leading-[54px] lg:leading-[46px] md:leading-[50px] sm:leading-[42px] mb-5 md:text-center;
     }
 
     .description-text {
-      @apply text-xl mb-10;
+      @apply text-xl mb-10 md:text-center;
     }
 
     .cta-row {
@@ -112,17 +112,19 @@ const feature = ref();
   }
 
   .img-area {
+    @apply md:hidden;
+
     img {
-      @apply relative left-20 w-[950px] h-auto object-contain;
+      @apply relative left-20 lg:left-0 w-[950px] h-auto object-contain;
     }
   }
 }
 
 .info-section {
-  @apply flex flex-col justify-center items-center w-1/2 mx-auto;
+  @apply flex flex-col justify-center items-center w-1/2 lg:w-3/4 md:w-4/5 sm:w-full sm:px-3.5 mx-auto;
 
   .info-text {
-    @apply text-primary-900/70 font-light text-[22px] mb-8 text-center;
+    @apply text-primary-900/70 font-light text-[22px] mdLg:text-xl sm:text-lg mb-8 text-center;
   }
 
   .info-img {
@@ -139,32 +141,32 @@ const feature = ref();
 }
 
 .feature-section {
-  @apply w-4/5 mx-auto py-32;
+  @apply w-4/5 lg:w-full mx-auto py-32 sm:py-28;
 
   .section-title {
-    @apply text-primary-900 font-medium text-4xl mb-20 text-center;
+    @apply text-primary-900 font-medium text-4xl lg:text-3xl mb-20 sm:mb-16 text-center;
   }
 
   .feature-row {
-    @apply grid grid-cols-3 gap-6;
+    @apply grid grid-cols-3 md:grid-cols-1 gap-6 lg:gap-4 mdLg:gap-2 md:gap-24 sm:gap-20;
 
     .feature-item {
       @apply flex flex-col justify-start items-center;
 
       .feature-icon {
-        @apply text-primary-900 text-4xl mb-8;
+        @apply mb-8;
 
         img {
-          @apply size-[86px] min-h-[86px] min-w-[86px] object-contain;
+          @apply size-[86px] lg:size-[80px] min-h-[86px] lg:min-h-[80px] min-w-[86px] lg:min-w-[80px] object-contain;
         }
       }
 
       .feature-title {
-        @apply text-primary-900 font-medium text-2xl text-center mb-4;
+        @apply text-primary-900 font-medium text-2xl lg:text-xl md:text-2xl sm:text-xl text-center mb-4;
       }
 
       .feature-description {
-        @apply text-primary-900/70 text-xl text-center font-light w-4/5 mx-auto;
+        @apply text-primary-900/70 text-xl lg:text-lg mdLg:text-base md:text-lg text-center font-light w-4/5 mx-auto;
       }
     }
   }

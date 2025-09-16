@@ -18,7 +18,7 @@
             <router-link to="/" class="nav-link nav-link-active"
               >Home</router-link
             >
-            <router-link to="#features" class="nav-link">Features</router-link>
+            <!-- <router-link to="#features" class="nav-link">Features</router-link> -->
             <router-link to="/pricing" class="nav-link">Pricing</router-link>
             <router-link to="/developers" class="nav-link"
               >Developers</router-link
@@ -36,6 +36,11 @@
               >Create Account</router-link
             >
           </div>
+
+          <!-- MOBILE NAV MENU -->
+          <div class="mobile-nav-menu">
+            <div class="icon icon-menu"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -48,28 +53,28 @@ import { ref } from "vue";
 
 <style lang="scss" scoped>
 .header-row {
-  @apply flex items-center justify-between py-8;
+  @apply flex items-center justify-between py-8 sm:py-6;
 
   .brand-logo {
     @apply flex justify-start items-center gap-x-2;
 
     img {
-      @apply w-12 h-12 object-contain;
+      @apply size-12 lg:size-11 object-contain;
     }
 
     .brand-name {
-      @apply text-primary-900 font-medium text-xl;
+      @apply text-primary-900 font-medium text-xl lg:text-base mdLg:text-lg;
     }
   }
 
   .navigation {
-    @apply flex items-center justify-end gap-8;
+    @apply flex items-center justify-end gap-8 lg:gap-5;
 
     .nav-items {
-      @apply flex items-center justify-start gap-3;
+      @apply flex items-center justify-start gap-3 lg:gap-1 mdLg:hidden;
 
       .nav-link {
-        @apply text-primary-900/80 text-base transition duration-300 ease-in-out px-3.5 py-2 rounded-full hover:bg-primary-50;
+        @apply text-primary-900/80 text-base lg:text-[15px] transition duration-300 ease-in-out px-3.5 lg:px-3 py-2 rounded-full hover:bg-primary-50;
 
         &-active {
           @apply bg-primary-50 font-semibold;
@@ -78,7 +83,15 @@ import { ref } from "vue";
     }
 
     .nav-actions {
-      @apply flex items-center justify-end gap-4;
+      @apply flex items-center justify-end gap-4 mdLg:hidden;
+    }
+
+    .mobile-nav-menu {
+      @apply hidden mdLg:block cursor-pointer;
+
+      .icon {
+        @apply text-4xl text-primary-900 font-medium;
+      }
     }
   }
 }

@@ -61,28 +61,28 @@ const feature = ref();
 
 <style lang="scss" scoped>
 .footer-row {
-  @apply flex items-center justify-between py-12;
+  @apply flex items-center justify-between py-12 sm:py-9;
 
   .brand-logo {
     @apply flex justify-start items-center gap-x-2;
 
     img {
-      @apply w-11 h-11 object-contain;
+      @apply size-12 lg:size-11 sm:size-10 object-contain;
     }
 
     .brand-name {
-      @apply text-primary-900 font-medium text-lg;
+      @apply text-primary-900 font-medium text-lg sm:text-base;
     }
   }
 
   .social-icons {
-    @apply flex justify-end items-center gap-x-2;
+    @apply flex justify-end items-center gap-x-2 sm:gap-x-1;
 
     .social-icon {
-      @apply flex justify-center items-center size-9 min-w-9 min-h-9 rounded-full hover:bg-primary-50;
+      @apply flex justify-center items-center size-9 sm:size-8 min-w-9 sm:min-w-8 min-h-9 sm:min-h-8 rounded-full hover:bg-primary-50;
 
       .icon {
-        @apply text-primary-900/80 text-lg transition duration-300 ease-in-out hover:text-primary-900;
+        @apply text-primary-900/80 text-lg sm:text-base transition duration-300 ease-in-out hover:text-primary-900;
       }
     }
   }

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="auth-layout relative h-screen py-[50px] px-[100px] xl:px-[66px] lg:px-[50px] md:px-7 sm:px-3"
+    class="auth-layout relative py-[20px] px-[100px] xl:px-[66px] lg:px-[50px] md:px-7 sm:px-3"
   >
     <!-- CLOSE TRIGGER -->
     <div class="close-trigger" @click="router.push('/')">
@@ -36,22 +36,22 @@ onMounted(() => setPageBackgroundColor("#EDF0F2"));
 
 <style lang="scss" scoped>
 .auth-layout {
-  @apply h-screen flex flex-col justify-center items-center;
+  @apply relative top-20 xl:top-16 flex flex-col justify-start items-center;
 
   .close-trigger {
-    @apply w-12 h-12 rounded-full bg-primary-100 cursor-pointer absolute top-8 right-8 z-10 flex justify-center items-center hover:bg-red-100/80 transition duration-300 ease-in-out;
+    @apply size-12 md:size-10 rounded-full bg-primary-100 cursor-pointer fixed top-8 sm:top-6 right-8 sm:right-4 z-10 flex justify-center items-center hover:bg-red-100/80 transition duration-300 ease-in-out;
 
     .icon {
-      @apply text-3xl text-primary-800;
+      @apply text-3xl md:text-2xl text-primary-800;
     }
   }
 
   .container-wrapper {
-    @apply w-[44%] p-14 rounded-xl bg-neutral-10 shadow-sm;
+    @apply w-[44%] xl:w-[50%] lg:w-[60%] mdLg:w-[70%] md:w-4/5 sm:w-[94%] xs:w-[98%] p-14 lg:p-12 sm:py-10 sm:px-8 xs:px-5 rounded-xl bg-neutral-10 shadow-sm;
 
     .brand-logo {
       img {
-        @apply size-20 sm:w-[70px];
+        @apply size-20 lg:size-16 sm:size-14;
       }
     }
   }

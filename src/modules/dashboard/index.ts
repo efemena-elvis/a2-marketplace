@@ -4,7 +4,9 @@ const dashboardRoutes: IRouteType[] = [
   {
     path: "/dashboard",
     component: () =>
-      import(/* webpackChunkName: "base-layout" */ "@/layouts/base-layout.vue"),
+      import(
+        /* webpackChunkName: "base-layout" */ "@/modules/dashboard/layouts/dashboard-layout.vue"
+      ),
     children: [
       {
         path: "",

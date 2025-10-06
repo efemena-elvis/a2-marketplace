@@ -19,11 +19,21 @@
         </button>
 
         <button
+          v-if="isIRNGenerated"
           class="btn btn-primary btn-sm"
           @click="$emit('validate-invoices')"
           :disabled="!invoices.length || loading"
         >
           Validate Invoices
+        </button>
+
+        <button
+          v-else
+          class="btn btn-primary btn-sm"
+          @click="$emit('generate-irn')"
+          :disabled="!invoices.length || loading"
+        >
+          Generate IRN
         </button>
       </div>
     </div>
@@ -37,8 +47,8 @@
             <th>Customer</th>
             <th>Date</th>
             <th>Amount</th>
+            <th>IRN</th>
             <th>Status</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -68,8 +78,8 @@
             <th>Customer</th>
             <th>Date</th>
             <th>Amount</th>
+            <th>IRN</th>
             <th>Status</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -77,16 +87,12 @@
             <td class="invoice-id">{{ invoice.number }}</td>
             <td>{{ invoice.customerName }}</td>
             <td>{{ formatDate(invoice.date) }}</td>
-            <td>{{ formatCurrency(invoice.amount) }}</td>
+            <td>{{ formatCurrency(invoice.amount, invoice.currency_code) }}</td>
+            <td>{{ invoice.irn || "---" }}</td>
             <td>
               <span :class="['status-badge', getStatusClass(invoice.status)]">{{
                 invoice.status
               }}</span>
-            </td>
-            <td class="actions">
-              <button class="btn-icon" title="More options">
-                <span>&#8942;</span>
-              </button>
             </td>
           </tr>
         </tbody>
@@ -96,31 +102,46 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+
 interface Invoice {
   id: string;
   number: string;
   customerName: string;
   date: string;
   amount: number;
-  status: "Approved" | "Rejected" | "Pending Validation" | "Awaiting FIRS";
+  irn?: string;
+  currency_code: string;
+  status:
+    | "Approved"
+    | "Rejected"
+    | "Pending Validation"
+    | "Pending IRN"
+    | "Awaiting FIRS";
 }
 
-defineProps<{ invoices: Invoice[]; loading: boolean }>();
-defineEmits(["sync-now", "validate-invoices"]);
+const props = defineProps<{ invoices: Invoice[]; loading: boolean }>();
+defineEmits(["sync-now", "validate-invoices", "generate-irn"]);
+
+const isIRNGenerated = computed(() => {
+  return props.invoices.some((invoice) => invoice.irn);
+});
 
 const getStatusClass = (status: Invoice["status"]) => {
   const statusMap = {
     Approved: "status-approved",
     Rejected: "status-rejected",
     "Pending Validation": "status-pending",
+    "Pending IRN": "status-irn",
     "Awaiting FIRS": "status-awaiting",
   };
   return statusMap[status] || "status-default";
 };
-const formatCurrency = (value: number) =>
-  new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN" }).format(
-    value
-  );
+const formatCurrency = (value: number, currency_code: string) =>
+  new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: currency_code,
+  }).format(value);
 const formatDate = (dateString: string) =>
   new Date(dateString).toLocaleDateString("en-GB", {
     day: "numeric",
@@ -180,7 +201,8 @@ td.invoice-id {
 .status-rejected {
   @apply bg-red-100 text-red-900;
 }
-.status-pending {
+.status-pending,
+.status-irn {
   @apply bg-yellow-100 text-yellow-900;
 }
 .status-awaiting {

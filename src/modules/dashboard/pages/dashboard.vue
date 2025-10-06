@@ -12,8 +12,11 @@
     <div v-else class="invoice-dashboard">
       <InvoiceTable
         :invoices="syncedInvoices"
-        :loading="isFetchingInvoices"
+        :loading="
+          isFetchingInvoices || isGeneratingIRN || isSubmittingForValidation
+        "
         @sync-now="handleManualSync"
+        @generate-irn="handleGenerateIRN"
         @validate-invoices="handleValidation"
       />
     </div>
@@ -34,8 +37,16 @@ interface Invoice {
   customerName: string;
   date: string;
   amount: number;
-  status: "Approved" | "Rejected" | "Pending Validation" | "Awaiting FIRS";
+  irn?: string;
+  currency_code: string;
+  status:
+    | "Approved"
+    | "Rejected"
+    | "Pending Validation"
+    | "Pending IRN"
+    | "Awaiting FIRS";
 }
+
 const route = useRoute();
 
 // --- CONFIGURATION ---
@@ -51,6 +62,11 @@ const isLoading = ref<boolean>(true);
 const isZohoConnected = ref<boolean>(false);
 const isFetchingInvoices = ref<boolean>(false);
 const syncedInvoices = ref<Invoice[]>([]);
+
+const isGeneratingIRN = ref<boolean>(false);
+const generatedIRNInvoice = ref<any[]>([]);
+
+const isSubmittingForValidation = ref<boolean>(false);
 
 // --- CORE API AND TOKEN REFRESH LOGIC ---
 
@@ -125,6 +141,7 @@ const apiFetch = async (
   try {
     // First Attempt
     const response = await axios(url, config);
+
     return response.data;
   } catch (error) {
     // Axios throws an error for non-2xx responses. We check if it's a 401.
@@ -155,13 +172,17 @@ const fetchInvoices = async (): Promise<void> => {
   isFetchingInvoices.value = true;
   try {
     const data = await apiFetch("/imports/zoho/invoices", { method: "GET" });
+
+    console.log("Fetched invoices:", data);
+
     syncedInvoices.value = (data?.invoices || []).map((inv: any) => ({
       id: inv.invoice_id || `id_${Math.random()}`,
       number: inv.invoice_number || "N/A",
       customerName: inv.customer_name || "Unknown Customer",
       date: inv.date || new Date().toISOString(),
       amount: inv.total || 0,
-      status: "Pending Validation",
+      currency_code: inv.currency_code || "N/A",
+      status: "Pending IRN",
     }));
   } catch (error) {
     console.error("An error occurred while fetching invoices:", error);
@@ -197,15 +218,125 @@ const handleManualSync = (): void => {
   fetchInvoices();
 };
 
-const handleValidation = (): void => {
+/**
+ * NEW: Generates IRN for all synced invoices by sending them to the validation endpoint.
+ */
+const handleGenerateIRN = async (): Promise<void> => {
   if (!syncedInvoices.value.length) {
+    alert("There are no invoices to process.");
+    return;
+  }
+
+  isGeneratingIRN.value = true;
+
+  try {
+    // Create an array of promises, one for each API call
+    const promises = syncedInvoices.value.map((invoice) => {
+      // Define the request body for each invoice
+      const payload = {
+        business_id: "BIZ12658941251",
+        supplier: {
+          name: "Your Business Name",
+          tin: "123456789",
+          email: "supplier@example.com",
+          phone: "08012345678",
+          address: {
+            name: "123 Supplier Street",
+            city: "Lagos",
+            postal_code: "100001",
+            country: "NG",
+          },
+        },
+        customer: {
+          name: invoice.customerName,
+          tin: "987654321",
+          email: "customer@example.com",
+          phone: "09012345678",
+        },
+      };
+
+      // Return the promise from apiFetch
+      return apiFetch(`/imports/zoho/invoices/${invoice.id}`, {
+        method: "POST",
+        data: payload,
+      });
+    });
+
+    // Wait for ALL the promises to resolve
+    const results = await Promise.all(promises);
+
+    const updatedInvoices = syncedInvoices.value.map(
+      (originalInvoice, index) => {
+        const irnResponse = results[index];
+
+        return {
+          ...originalInvoice,
+          irn: irnResponse.irn,
+          status: "Pending Validation",
+          amount: irnResponse.legal_monetary_total.payable_amount,
+          currency_code: irnResponse.document_currency_code,
+          date: irnResponse.issue_date,
+        } as Invoice;
+      }
+    );
+
+    generatedIRNInvoice.value = results;
+
+    // Replace the old array with the newly merged one to trigger UI update
+    syncedInvoices.value = updatedInvoices;
+  } catch (error) {
+    console.error(
+      "An error occurred while generating IRN for one or more invoices:",
+      error
+    );
+    alert(
+      "An error occurred during validation. Please check the console for details."
+    );
+  } finally {
+    isGeneratingIRN.value = false;
+  }
+};
+
+const handleValidation = async (): Promise<void> => {
+  if (!generatedIRNInvoice.value.length) {
     alert("There are no invoices to validate.");
     return;
   }
-  const invoiceNumbers = syncedInvoices.value
-    .map((inv) => inv.number)
-    .join(", ");
-  alert(`Initiating validation for the following invoices: ${invoiceNumbers}`);
+
+  isSubmittingForValidation.value = true;
+
+  try {
+    // Create an array of promises, one for each API call
+    const promises = generatedIRNInvoice.value.map((invoice) => {
+      return apiFetch(`/validate/invoice`, {
+        method: "POST",
+        data: invoice,
+      });
+    });
+
+    // Wait for ALL the promises to resolve
+    await Promise.all(promises);
+
+    const updatedInvoices = syncedInvoices.value.map((originalInvoice) => {
+      return {
+        ...originalInvoice,
+        status: "Awaiting FIRS",
+      } as Invoice;
+    });
+
+    // Replace the old array with the newly merged one to trigger UI update
+    syncedInvoices.value = updatedInvoices;
+  } catch (error) {
+    console.error(
+      "An error occurred while validating invoice for one or more invoices:",
+      error
+    );
+    alert(
+      "An error occurred during validation. Please check the console for details."
+    );
+  } finally {
+    isSubmittingForValidation.value = false;
+  }
 };
 
 // --- VUE LIFECYCLE HOOK ---

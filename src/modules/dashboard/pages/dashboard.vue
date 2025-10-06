@@ -23,12 +23,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import axios, { AxiosRequestConfig } from "axios";
 import DashboardEmptyState from "@/modules/dashboard/components/dashboard-empty.vue";
 import InvoiceTable from "@/modules/dashboard/components/invoice-table.vue";
 
 // --- INTERFACES AND CONSTANTS ---
-
-// Defines the structure of an invoice object used within the component
 interface Invoice {
   id: string;
   number: string;
@@ -37,35 +36,27 @@ interface Invoice {
   amount: number;
   status: "Approved" | "Rejected" | "Pending Validation" | "Awaiting FIRS";
 }
-
-// Access the current route to check for query parameters from the Zoho redirect
 const route = useRoute();
 
 // --- CONFIGURATION ---
 const xAPIkey = "xkOJymWuJJ7AaStmDsjypXPe8KXWQY73RQBbJ1Y9";
-const apiBaseURL = "https://staging-api.a2comply.com/invoices/v1";
+// THIS MUST POINT TO YOUR LOCAL PROXY TO BYPASS CORS DURING DEVELOPMENT
+const apiBaseURL = "/api/invoices/v1";
 
-// Constants for localStorage keys to ensure consistency
 const ZOHO_ACCESS_TOKEN_KEY = "ZOHO_ACCESS_TOKEN";
 const ZOHO_REFRESH_TOKEN_KEY = "ZOHO_REFRESH_TOKEN";
 
 // --- REACTIVE UI STATE ---
-
-// Controls the initial "Verifying..." loading screen
 const isLoading = ref<boolean>(true);
-// The primary state that determines if we show the "Connect" screen or the invoice table
 const isZohoConnected = ref<boolean>(false);
-// Controls the skeleton loader inside the InvoiceTable component
 const isFetchingInvoices = ref<boolean>(false);
-// The array that holds the invoice data fetched from the API
 const syncedInvoices = ref<Invoice[]>([]);
 
 // --- CORE API AND TOKEN REFRESH LOGIC ---
 
 /**
- * Performs the token refresh by calling your backend's refresh endpoint.
- * It expects both a new access token and a new refresh token in the response.
- * @returns {Promise<boolean>} - True if the refresh was successful, false otherwise.
+ * Performs token refresh using axios.
+ * @returns {Promise<boolean>} - True if refresh was successful.
  */
 const handleTokenRefresh = async (): Promise<boolean> => {
   console.log("Access token expired or invalid. Attempting to refresh...");
@@ -78,93 +69,83 @@ const handleTokenRefresh = async (): Promise<boolean> => {
   }
 
   const refreshUrl = `${apiBaseURL}/imports/zoho/auth/refresh`;
-  const headers = new Headers({
-    "x-api-key": xAPIkey,
-    "Content-Type": "application/json",
-  });
-
   try {
-    const response = await fetch(refreshUrl, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({ refreshToken: refreshToken }),
-    });
+    const response = await axios.post(
+      refreshUrl,
+      { refreshToken: refreshToken },
+      { headers: { "x-api-key": xAPIkey } }
+    );
 
-    const data = await response.json();
-    if (!response.ok || data.error) {
-      throw new Error(data.message || "Token refresh API call failed.");
-    }
-
-    const { access_token: accessToken, refresh_token: newRefreshToken } = data;
+    const { access_token: accessToken, refresh_token: newRefreshToken } =
+      response.data;
     if (!accessToken || !newRefreshToken) {
       throw new Error(
         "Refresh endpoint did not return the expected new tokens."
       );
     }
 
-    // Update localStorage with BOTH new tokens
     localStorage.setItem(ZOHO_ACCESS_TOKEN_KEY, accessToken);
     localStorage.setItem(ZOHO_REFRESH_TOKEN_KEY, newRefreshToken);
     console.log("Successfully refreshed both access and refresh tokens.");
-    return true; // Success!
+    return true;
   } catch (error) {
     console.error("A critical error occurred during token refresh:", error);
-    // If refresh fails, the session is invalid. Clear all tokens and mark as disconnected.
     localStorage.removeItem(ZOHO_ACCESS_TOKEN_KEY);
     localStorage.removeItem(ZOHO_REFRESH_TOKEN_KEY);
     isZohoConnected.value = false;
-    return false; // Failure
+    return false;
   }
 };
 
 /**
- * A reusable, intelligent fetch wrapper for your API.
- * It automatically adds headers and handles the 401 token refresh/retry flow.
+ * Reusable axios wrapper that handles auth headers and the 401 retry flow.
  * @param endpoint - The API endpoint to call (e.g., '/imports/zoho/invoices').
- * @param options - Standard fetch options (method, body, etc.).
- * @returns {Promise<any>} - The JSON response from the API.
+ * @param options - Axios request configuration.
+ * @returns {Promise<any>} - The data from the API response.
  */
 const apiFetch = async (
   endpoint: string,
-  options: RequestInit = {}
+  options: AxiosRequestConfig = {}
 ): Promise<any> => {
   let accessToken = localStorage.getItem(ZOHO_ACCESS_TOKEN_KEY);
-  if (!accessToken) {
+  if (!accessToken)
     throw new Error("No access token available for API request.");
-  }
 
   const url = `${apiBaseURL}${endpoint}`;
-  const headers = new Headers(options.headers || {});
-  headers.set("zoho_authorization", accessToken);
-  headers.set("x-api-key", xAPIkey);
 
-  const requestOptions: RequestInit = { ...options, headers };
+  // Set default headers and merge with any provided in options
+  const headers = {
+    ...options.headers,
+    zoho_authorization: accessToken,
+    "x-api-key": xAPIkey,
+  };
 
-  // First Attempt
-  let response = await fetch(url, requestOptions);
+  const config: AxiosRequestConfig = { ...options, headers };
 
-  // If the first attempt fails with 401 Unauthorized, try to refresh and retry
-  if (response.status === 401) {
-    const refreshSuccessful = await handleTokenRefresh();
+  try {
+    // First Attempt
+    const response = await axios(url, config);
+    return response.data;
+  } catch (error) {
+    // Axios throws an error for non-2xx responses. We check if it's a 401.
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      const refreshSuccessful = await handleTokenRefresh();
 
-    if (refreshSuccessful) {
-      // Get the NEW token from storage and update the headers for the retry
-      accessToken = localStorage.getItem(ZOHO_ACCESS_TOKEN_KEY);
-      headers.set("zoho_authorization", accessToken!);
-
-      console.log("Retrying the failed API request with the new token...");
-      response = await fetch(url, requestOptions); // Second Attempt
-    } else {
-      // If refresh fails, we can't proceed.
-      throw new Error("Token refresh failed. The user is now disconnected.");
+      if (refreshSuccessful) {
+        // Get the NEW token and update the header for the retry
+        config.headers!["zoho_authorization"] = localStorage.getItem(
+          ZOHO_ACCESS_TOKEN_KEY
+        );
+        console.log("Retrying the failed API request with the new token...");
+        const retryResponse = await axios(url, config); // Second Attempt
+        return retryResponse.data;
+      } else {
+        throw new Error("Token refresh failed. The user is now disconnected.");
+      }
     }
+    // If it's not a 401 or some other error, re-throw it to be caught by the calling function.
+    throw error;
   }
-
-  if (!response.ok) {
-    throw new Error(`API request failed with status: ${response.status}`);
-  }
-
-  return response.json();
 };
 
 /**
@@ -184,7 +165,7 @@ const fetchInvoices = async (): Promise<void> => {
     }));
   } catch (error) {
     console.error("An error occurred while fetching invoices:", error);
-    syncedInvoices.value = []; // Clear invoices on error to prevent displaying stale data.
+    syncedInvoices.value = [];
   } finally {
     isFetchingInvoices.value = false;
   }
@@ -225,7 +206,6 @@ const handleValidation = (): void => {
     .map((inv) => inv.number)
     .join(", ");
   alert(`Initiating validation for the following invoices: ${invoiceNumbers}`);
-  // In a real app, this would call apiFetch('/invoices/validate', { method: 'POST', body: ... })
 };
 
 // --- VUE LIFECYCLE HOOK ---

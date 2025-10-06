@@ -68,7 +68,6 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-// import constants from "@/utilities/constants";
 
 const integrations = ref([
   {
@@ -79,7 +78,7 @@ const integrations = ref([
 
 const handleConnectToZoho = () => {
   // const ZOHO_CLIENT_ID = "1000.DF660IXJ0EV5HHP1XALIX8CDM6E3RK";
-  const ZOHO_CLIENT_ID = "1000.KHS8IKF3X4RINFY5PT1PD3E7SI2LNI";
+  const ZOHO_CLIENT_ID = "1000.9T6YTWGJCU69GRFUIO00WKS0YYKV8W";
   const ZOHO_REDIRECT_URI =
     "https://staging-api.a2comply.com/invoices/v1/imports/zoho/auth";
 

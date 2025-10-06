@@ -41,7 +41,7 @@ const route = useRoute();
 // --- CONFIGURATION ---
 const xAPIkey = "xkOJymWuJJ7AaStmDsjypXPe8KXWQY73RQBbJ1Y9";
 // THIS MUST POINT TO YOUR LOCAL PROXY TO BYPASS CORS DURING DEVELOPMENT
-const apiBaseURL = "/api/invoices/v1";
+const apiBaseURL = "https://staging-api.a2comply.com/invoices/v1";
 
 const ZOHO_ACCESS_TOKEN_KEY = "ZOHO_ACCESS_TOKEN";
 const ZOHO_REFRESH_TOKEN_KEY = "ZOHO_REFRESH_TOKEN";

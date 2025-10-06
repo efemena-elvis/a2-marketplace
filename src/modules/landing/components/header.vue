@@ -9,7 +9,7 @@
         <div class="brand-logo">
           <img
             src="@/shared/assets/images/brand-logo.png"
-            alt="a2 Marketplace"
+            alt="CISL Marketplace"
           />
           <!-- <div class="brand-name">A2 Marketplace</div> -->
         </div>

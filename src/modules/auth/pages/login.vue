@@ -1,5 +1,5 @@
 <template>
-  <AuthWrapper title_text="Welcome to A2 Marketplace">
+  <AuthWrapper title_text="Welcome to CISL">
     <form @submit.prevent="handleUserLogin">
       <!-- EMAIL ADDRESS -->
       <TextFieldInput

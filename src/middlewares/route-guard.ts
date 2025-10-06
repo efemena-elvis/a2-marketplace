@@ -12,7 +12,7 @@ class RouteGuard {
   dashboardRoute: string = "RedstoneBalance"; // "RedstoneOverview";
 
   authToken: string | object | null = getStorage({
-    storage_name: constants.REDSTONE_AUTH_TOKEN,
+    storage_name: constants.APP_AUTH_TOKEN,
   });
 
   verifyAuthRoutes(

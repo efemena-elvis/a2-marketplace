@@ -7,8 +7,11 @@
       <div class="header-row">
         <!-- BRAND LOGO -->
         <div class="brand-logo">
-          <img src="@/shared/assets/images/a2-logo.png" alt="a2 Marketplace" />
-          <div class="brand-name">A2 Marketplace</div>
+          <img
+            src="@/shared/assets/images/brand-logo.png"
+            alt="a2 Marketplace"
+          />
+          <!-- <div class="brand-name">A2 Marketplace</div> -->
         </div>
 
         <!-- NAVIGATION LINKS -->
@@ -59,7 +62,8 @@ import { ref } from "vue";
     @apply flex justify-start items-center gap-x-2;
 
     img {
-      @apply size-12 lg:size-11 object-contain;
+      // @apply size-12 lg:size-11 object-contain;
+      @apply w-[220px] h-auto;
     }
 
     .brand-name {
@@ -74,7 +78,7 @@ import { ref } from "vue";
       @apply flex items-center justify-start gap-3 lg:gap-1 mdLg:hidden;
 
       .nav-link {
-        @apply text-primary-900/80 text-base lg:text-[15px] transition duration-300 ease-in-out px-3.5 lg:px-3 py-2 rounded-full hover:bg-primary-50;
+        @apply text-grey-900/80 text-base lg:text-[15px] transition duration-300 ease-in-out px-3.5 lg:px-3 py-2 rounded-full hover:bg-primary-50;
 
         &-active {
           @apply bg-primary-50 font-semibold;
@@ -90,7 +94,7 @@ import { ref } from "vue";
       @apply hidden mdLg:block cursor-pointer;
 
       .icon {
-        @apply text-4xl text-primary-900 font-medium;
+        @apply text-4xl text-grey-900 font-medium;
       }
     }
   }

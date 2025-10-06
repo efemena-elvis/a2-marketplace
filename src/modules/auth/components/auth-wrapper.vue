@@ -1,7 +1,7 @@
 <template>
   <div class="w-full w-max-full m-auto">
     <!-- TITLE TEXT -->
-    <div class="text-xl md:text-lg text-primary-900/90 text-center mb-12">
+    <div class="text-xl md:text-lg text-grey-900 text-center mb-12">
       {{ title_text }}
     </div>
 

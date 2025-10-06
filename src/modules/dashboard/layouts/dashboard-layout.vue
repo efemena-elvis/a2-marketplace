@@ -44,7 +44,7 @@ type Events = {
 
 const route = useRoute();
 
-const { getBusiness, getBusinessActivatedStatus } = useProfile();
+const {} = useProfile();
 
 const eventBus = inject<Emitter<Events>>("eventBus");
 const showMobileSidebar = ref<boolean>(false);
@@ -62,7 +62,7 @@ watch(route, () => {
 const { setPageBackgroundColor } = useColor();
 
 onMounted(() => {
-  setPageBackgroundColor("#ffffff");
+  setPageBackgroundColor("#fafcff");
 
   eventBus?.on("triggerSidebar", () => toggleMobileSidebar());
 });
@@ -89,24 +89,13 @@ onMounted(() => {
     @apply relative w-[83%] xl:w-[80%] lg:w-[76%] mdLg:w-full left-[17%] xl:left-[20%] lg:left-[24%] mdLg:left-0;
 
     .topbar-area {
-      @apply fixed top-0 w-[83%] xl:w-[80%] lg:w-[76%] mdLg:w-full bg-neutral-10 shadow-sm border;
+      @apply fixed top-0 w-[83%] xl:w-[80%] lg:w-[76%] mdLg:w-full bg-neutral-10 shadow-sm;
       z-index: 99;
     }
 
     .main-content {
-      @apply relative mt-3.5 w-full h-full pb-7 px-8 xl:px-6 mdLg:px-4;
+      @apply relative w-full h-full pb-7 px-8 xl:px-6 mdLg:px-4;
     }
-  }
-}
-.support-card {
-  @apply fixed z-40 text-white bg-teal-700/95 bottom-7 right-7 scale-[0.85] cursor-pointer rounded-full py-[11px] px-[15px] flex justify-center items-center gap-x-2 transition duration-300 ease-in-out hover:scale-[0.9];
-
-  .icon {
-    @apply text-[16px];
-  }
-
-  .text {
-    @apply text-[13px] text-white font-medium;
   }
 }
 </style>

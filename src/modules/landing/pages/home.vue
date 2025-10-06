@@ -85,18 +85,14 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from "vue";
-
-const feature = ref();
-</script>
+<script setup></script>
 
 <style lang="scss" scoped>
 .hero-section {
   @apply h-screen pt-12 flex justify-between items-center gap-x-4;
 
   .content-area {
-    @apply flex flex-col justify-center items-start md:items-center text-primary-900 w-[650px] xl:w-[70%] lg:w-[80%] md:w-full;
+    @apply flex flex-col justify-center items-start md:items-center text-grey-900 w-[650px] xl:w-[70%] lg:w-[80%] md:w-full;
 
     .title-text {
       @apply font-normal text-[52px] xl:text-[44px] lg:text-[36px] md:text-[40px] sm:text-[32px] leading-[62px] xl:leading-[54px] lg:leading-[46px] md:leading-[50px] sm:leading-[42px] mb-5 md:text-center;
@@ -124,7 +120,7 @@ const feature = ref();
   @apply flex flex-col justify-center items-center w-1/2 lg:w-3/4 md:w-4/5 sm:w-full sm:px-3.5 mx-auto;
 
   .info-text {
-    @apply text-primary-900/70 font-light text-[22px] mdLg:text-xl sm:text-lg mb-8 text-center;
+    @apply text-grey-900/70 font-light text-[22px] mdLg:text-xl sm:text-lg mb-8 text-center;
   }
 
   .info-img {
@@ -136,7 +132,7 @@ const feature = ref();
   }
 
   .info-help-text {
-    @apply text-primary-900/80 text-base text-center;
+    @apply text-grey-900/80 text-base text-center;
   }
 }
 
@@ -144,7 +140,7 @@ const feature = ref();
   @apply w-4/5 lg:w-full mx-auto py-32 sm:py-28;
 
   .section-title {
-    @apply text-primary-900 font-medium text-4xl lg:text-3xl mb-20 sm:mb-16 text-center;
+    @apply text-grey-900 font-medium text-4xl lg:text-3xl mb-20 sm:mb-16 text-center;
   }
 
   .feature-row {
@@ -162,11 +158,11 @@ const feature = ref();
       }
 
       .feature-title {
-        @apply text-primary-900 font-medium text-2xl lg:text-xl md:text-2xl sm:text-xl text-center mb-4;
+        @apply text-grey-900 font-medium text-2xl lg:text-xl md:text-2xl sm:text-xl text-center mb-4;
       }
 
       .feature-description {
-        @apply text-primary-900/70 text-xl lg:text-lg mdLg:text-base md:text-lg text-center font-light w-4/5 mx-auto;
+        @apply text-grey-900/70 text-xl lg:text-lg mdLg:text-base md:text-lg text-center font-light w-4/5 mx-auto;
       }
     }
   }

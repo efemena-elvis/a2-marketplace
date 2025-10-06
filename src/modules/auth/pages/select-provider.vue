@@ -9,16 +9,16 @@
 
     <div class="container-wrapper">
       <a href="/" class="brand-logo relative block mx-auto w-max mb-8">
-        <img src="@/shared/assets/images/a2-logo.png" alt="a2-logo" />
+        <img src="@/shared/assets/images/brand-logo-icon.png" alt="a2-logo" />
       </a>
 
       <!-- TITLE TEXT -->
-      <div class="text-xl md:text-lg text-primary-900/90 text-center mb-2">
+      <div class="text-xl md:text-lg text-grey-900/90 text-center mb-2">
         What's your Invoicing Solution?
       </div>
 
       <!-- SUBTITLE TEXT -->
-      <div class="text-sm font-light text-primary-900/70 text-center mb-8">
+      <div class="text-sm font-light text-grey-900/70 text-center mb-8">
         Select the software used to generate your invoices
       </div>
 

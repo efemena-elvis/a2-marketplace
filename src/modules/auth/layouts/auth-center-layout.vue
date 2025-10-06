@@ -9,7 +9,7 @@
 
     <div class="container-wrapper">
       <a href="/" class="brand-logo relative block mx-auto w-max mb-8">
-        <img src="@/shared/assets/images/a2-logo.png" alt="a2-logo" />
+        <img src="@/shared/assets/images/brand-logo-icon.png" alt="cisl-logo" />
       </a>
 
       <div class="flex justify-center items-start">
@@ -42,7 +42,7 @@ onMounted(() => setPageBackgroundColor("#EDF0F2"));
     @apply size-12 md:size-10 rounded-full bg-primary-100 cursor-pointer fixed top-8 sm:top-6 right-8 sm:right-4 z-10 flex justify-center items-center hover:bg-red-100/80 transition duration-300 ease-in-out;
 
     .icon {
-      @apply text-3xl md:text-2xl text-primary-800;
+      @apply text-3xl md:text-2xl text-grey-800;
     }
   }
 
@@ -51,7 +51,8 @@ onMounted(() => setPageBackgroundColor("#EDF0F2"));
 
     .brand-logo {
       img {
-        @apply size-20 lg:size-16 sm:size-14;
+        @apply size-24 lg:size-16 sm:size-14;
+        // @apply size-20 lg:size-16 sm:size-14;
       }
     }
   }

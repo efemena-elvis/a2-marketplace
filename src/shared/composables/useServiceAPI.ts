@@ -37,14 +37,14 @@ interface IAPIKeys {
 // ===============================
 // SERVICE API CLASS
 class ServiceApi {
-  API_BASE_URL: string = constants.REDSTONE_API_URL;
-  API_VERSION: string = constants.REDSTONE_API_VERSION;
-  private initialBaseURL: string = `${this.API_BASE_URL}/${this.API_VERSION}/`;
+  API_BASE_URL: string = constants.API_BASE_URL;
+  API_VERSION: string = "";
+  private initialBaseURL: string = `${this.API_BASE_URL}/`;
   private customBaseURL: string | null = null;
 
   // Mapping of names to base URLs
   private baseApiUrls: { [key: string]: string } = {
-    storefront: constants.STOREFRONT_API_URL,
+    // storefront: constants.STOREFRONT_API_URL,
   };
 
   // INSTANTIATE BASE API URL
@@ -298,37 +298,6 @@ class ServiceApi {
     return await err.response?.data;
   }
 
-  getUserAPIKeys() {
-    const authBusiness = getStorage({
-      storage_name: constants.REDSTONE_AUTH_BUSINESS,
-      storage_type: "object",
-    }) as IBusinessProfile;
-
-    const authBusinessToken = getStorage({
-      storage_name: constants.REDSTONE_AUTH_BUSINESS_TOKEN,
-      storage_type: "object",
-    }) as IAPIKeys;
-
-    if (Object.keys(authBusinessToken).length) {
-      if (authBusiness?.businessMode === "test") {
-        return {
-          publicKey: decodeString(authBusinessToken.playground.nigeria),
-          secretKey: decodeString(authBusinessToken.playground.unitedKingdom),
-        };
-      } else {
-        return {
-          publicKey: decodeString(authBusinessToken.alcatraz.nigeria),
-          secretKey: decodeString(authBusinessToken.alcatraz.unitedKingdom),
-        };
-      }
-    } else {
-      return {
-        publicKey: null,
-        secretKey: null,
-      };
-    }
-  }
-
   // ===============================
   // SETUP REQUEST HEADERS
   getHeaders(
@@ -337,7 +306,7 @@ class ServiceApi {
     customHeaders: Record<string, string | null>
   ): AxiosRequestConfig {
     const authUserToken = getStorage({
-      storage_name: constants.REDSTONE_AUTH_TOKEN,
+      storage_name: constants.APP_AUTH_TOKEN,
     }) as string | null;
 
     if (requiresPublicKey) {
@@ -365,7 +334,6 @@ class ServiceApi {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${userToken}`,
-          "public-key": this.getUserAPIKeys().publicKey,
         },
       };
     }
@@ -374,8 +342,6 @@ class ServiceApi {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${userToken}`,
-        "public-key": this.getUserAPIKeys().publicKey,
-        "secret-key": this.getUserAPIKeys().secretKey,
       },
     };
   }

@@ -60,7 +60,7 @@ button {
 }
 
 .btn-secondary {
-  @apply bg-neutral-10 border border-primary-900 text-primary-900 hover:bg-primary-50 hover:text-primary-900 focus:bg-primary-50 focus:text-primary-900;
+  @apply bg-neutral-10 border border-primary-900 text-grey-900 hover:bg-primary-50 hover:text-primary-900 focus:bg-primary-50 focus:text-grey-900;
 }
 
 .btn-tertiary {

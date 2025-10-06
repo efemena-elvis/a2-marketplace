@@ -3,8 +3,8 @@
     <div class="footer-row">
       <!-- BRAND LOGO -->
       <div class="brand-logo">
-        <img src="@/shared/assets/images/a2-logo.png" alt="a2 Marketplace" />
-        <div class="brand-name">A2 Marketplace</div>
+        <img src="@/shared/assets/images/brand-logo.png" alt="a2 Marketplace" />
+        <!-- <div class="brand-name">A2 Marketplace</div> -->
       </div>
 
       <!-- SOCIAL ICONS -->
@@ -53,11 +53,7 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from "vue";
-
-const feature = ref();
-</script>
+<script setup></script>
 
 <style lang="scss" scoped>
 .footer-row {
@@ -67,7 +63,8 @@ const feature = ref();
     @apply flex justify-start items-center gap-x-2;
 
     img {
-      @apply size-12 lg:size-11 sm:size-10 object-contain;
+      // @apply size-12 lg:size-11 sm:size-10 object-contain;
+      @apply w-[180px] h-auto;
     }
 
     .brand-name {
@@ -82,7 +79,7 @@ const feature = ref();
       @apply flex justify-center items-center size-9 sm:size-8 min-w-9 sm:min-w-8 min-h-9 sm:min-h-8 rounded-full hover:bg-primary-50;
 
       .icon {
-        @apply text-primary-900/80 text-lg sm:text-base transition duration-300 ease-in-out hover:text-primary-900;
+        @apply text-grey-900/80 text-lg sm:text-base transition duration-300 ease-in-out hover:text-primary-900;
       }
     }
   }

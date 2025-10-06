@@ -8,8 +8,8 @@ export function useString() {
     let storage_exception_key = "identifier_token";
 
     // PRIORITY REMOVALS ON LOGOUT
-    removeStorage(constants.REDSTONE_AUTH_USER);
-    removeStorage(constants.REDSTONE_AUTH_TOKEN);
+    removeStorage(constants.APP_AUTH_USER);
+    removeStorage(constants.APP_AUTH_TOKEN);
     removeStorage("timestamp");
 
     for (let i = 0; i < localStorage.length; i++) {

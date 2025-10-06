@@ -2,8 +2,8 @@
   <div class="base-sidebar">
     <!-- BUSINESS LOGO -->
     <div class="business-logo">
-      <img :src="renderImg('a2-logo.png')" alt="Business Logo" />
-      <div class="brand-name">A2 Marketplace</div>
+      <img :src="renderImg('brand-logo.png')" alt="Business Logo" />
+      <!-- <div class="brand-name">A2 Marketplace</div> -->
     </div>
 
     <!-- SIDEBAR ITEMS AREA -->
@@ -40,14 +40,15 @@ const sidebarRouteList = ref<IRouteGroupType[]>(sidebarRoutes);
 
 <style lang="scss" scoped>
 .base-sidebar {
-  @apply relative bg-[#97B5E5]/80 h-full;
+  @apply relative bg-neutral-10 h-full border-r border-r-grey-300/25;
   z-index: 6999;
 
   .business-logo {
-    @apply flex justify-start items-center gap-x-2 pt-6 px-6;
+    @apply flex justify-start items-center gap-x-2 pt-7 px-6;
 
     img {
-      @apply size-10 object-contain;
+      @apply w-[180px] h-auto;
+      // @apply size-10 object-contain;
     }
 
     .brand-name {
@@ -56,7 +57,7 @@ const sidebarRouteList = ref<IRouteGroupType[]>(sidebarRoutes);
   }
 
   .sidebar-items-area {
-    @apply absolute top-0 pt-[108px] pb-28 w-full h-screen overflow-auto;
+    @apply absolute top-0 pt-[120px] pb-28 w-full h-screen overflow-auto;
 
     &::-webkit-scrollbar {
       display: none;
@@ -76,18 +77,18 @@ const sidebarRouteList = ref<IRouteGroupType[]>(sidebarRoutes);
   }
 
   .sidebar-item {
-    @apply w-full px-6 py-3.5 text-primary-900 flex justify-start items-center gap-x-[12px] transition duration-300 ease-in-out hover:bg-primary-400/50;
+    @apply w-full px-6 py-3.5 text-grey-700 flex justify-start items-center gap-x-[12px] font-normal transition duration-300 ease-in-out hover:bg-primary-400/50;
 
     .icon {
-      @apply text-[17px];
+      @apply text-base;
     }
 
     .sidebar-text {
-      @apply text-base font-medium;
+      @apply text-[15px] font-medium;
     }
 
     &--active {
-      @apply bg-neutral-10;
+      @apply bg-primary-400/50 font-semibold text-grey-900;
     }
   }
 }

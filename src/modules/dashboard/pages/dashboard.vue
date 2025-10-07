@@ -205,13 +205,17 @@ const initializeConnection = async (): Promise<void> => {
     localStorage.setItem(ZOHO_REFRESH_TOKEN_KEY, refresh_token as string);
     isZohoConnected.value = true;
     window.history.replaceState({}, document.title, window.location.pathname);
+    alert(`Zoho sucessfully connected to CISL platform.`);
+
     await fetchInvoices();
   } else if (localStorage.getItem(ZOHO_ACCESS_TOKEN_KEY)) {
     isZohoConnected.value = true;
     await fetchInvoices();
   } else {
+    alert(`Zoho unable to connect to CISL platform.`);
     isZohoConnected.value = false;
   }
+
   isLoading.value = false;
 };
 
@@ -241,7 +245,7 @@ const handleGenerateIRN = async (invoiceIndex: number): Promise<void> => {
         name: "Your Business Name",
         tin: "123456789",
         email: "supplier@example.com",
-        phone: "08012345678",
+        phone: "+2348012345678",
         address: {
           name: "123 Supplier Street",
           city: "Lagos",
@@ -253,7 +257,7 @@ const handleGenerateIRN = async (invoiceIndex: number): Promise<void> => {
         name: targetInvoice.customerName,
         tin: "987654321",
         email: "customer@example.com",
-        phone: "09012345678",
+        phone: "+2349012345678",
       },
     };
 

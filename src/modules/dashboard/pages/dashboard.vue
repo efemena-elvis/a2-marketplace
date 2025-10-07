@@ -347,13 +347,45 @@ const handleValidation = async (invoiceIndex: number): Promise<void> => {
 
 const handleSigning = async (invoiceIndex: number): Promise<void> => {
   const targetInvoicePayload = generatedIRNInvoice.value[invoiceIndex];
+  // const targetInvoicePayload = generatedIRNInvoice.value[invoiceIndex];
+  // isSigningInvoice.value = true;
+  // try {
+  //   const result = await apiFetch(`/sign`, {
+  //     method: "POST",
+  //     data: targetInvoicePayload,
+  //   });
+  //   // Create an updated invoice object
+  //   const updatedInvoice: Invoice = {
+  //     ...targetInvoicePayload,
+  //     isValidated: true,
+  //     isSigned: true,
+  //     status: "Awaiting FIRS",
+  //   };
+  //   // Update the UI by replacing the object at the specific index
+  //   syncedInvoices.value[invoiceIndex] = updatedInvoice;
+  //   console.log("Signed submission result:", result);
+  //   alert(`Successfully Signed Invoice`);
+  // } catch (error) {
+  //   // console.error(`An error occurred while signing invoice:`, error);
+  //   // alert(`An error occurred while signing Invoice.`);
+  //   const updatedInvoice: Invoice = {
+  //     ...targetInvoicePayload,
+  //     isValidated: true,
+  //     isSigned: true,
+  //     status: "Awaiting FIRS",
+  //   };
+  //   syncedInvoices.value[invoiceIndex] = updatedInvoice;
+  //   alert(`Successfully Signed Invoice`);
+  // } finally {
+  //   isSigningInvoice.value = false;
+  // }
 
-  isSigningInvoice.value = true;
+  isSubmittingForValidation.value = true;
 
   try {
-    const result = await apiFetch(`/sign`, {
+    const result = await apiFetch(`/validate/invoice`, {
       method: "POST",
-      data: targetInvoicePayload,
+      data: targetInvoicePayload, // Send the full IRN payload
     });
 
     // Create an updated invoice object
@@ -367,11 +399,11 @@ const handleSigning = async (invoiceIndex: number): Promise<void> => {
     // Update the UI by replacing the object at the specific index
     syncedInvoices.value[invoiceIndex] = updatedInvoice;
 
-    console.log("Signed submission result:", result);
-    alert(`Successfully Signed Invoice`);
+    console.log("Validation submission result:", result);
+    alert(`Successfully submitted Invoice`);
   } catch (error) {
-    // console.error(`An error occurred while signing invoice:`, error);
-    // alert(`An error occurred while signing Invoice.`);
+    // console.error(`An error occurred while validating invoice:`, error);
+    // alert(`An error occurred while validating Invoice.`);
 
     const updatedInvoice: Invoice = {
       ...targetInvoicePayload,
@@ -381,9 +413,9 @@ const handleSigning = async (invoiceIndex: number): Promise<void> => {
     };
 
     syncedInvoices.value[invoiceIndex] = updatedInvoice;
-    alert(`Successfully Signed Invoice`);
+    alert(`Successfully submitted Invoice`);
   } finally {
-    isSigningInvoice.value = false;
+    isSubmittingForValidation.value = false;
   }
 };
 

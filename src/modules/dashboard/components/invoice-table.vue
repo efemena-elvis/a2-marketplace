@@ -117,7 +117,9 @@
               </template>
 
               <template v-else-if="invoice.isSigned && invoice.isValidated">
-                <button class="btn btn-primary btn-sm" disabled>Done</button>
+                <button class="btn btn-primary btn-sm" disabled>
+                  Submitted
+                </button>
               </template>
 
               <template v-else>
@@ -126,7 +128,7 @@
                   @click="$emit('sign-invoices', index)"
                   :disabled="!invoices.length || loading"
                 >
-                  Sign Invoice
+                  Submit
                 </button>
               </template>
             </td>

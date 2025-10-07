@@ -177,10 +177,10 @@ const getStatusClass = (status: Invoice["status"]) => {
   };
   return statusMap[status] || "status-default";
 };
-const formatCurrency = (value: number, currency_code: string) =>
+const formatCurrency = (value: number, currency_code: string = "NGN") =>
   new Intl.NumberFormat("en-NG", {
     style: "currency",
-    currency: currency_code,
+    currency: "NGN",
   }).format(value);
 const formatDate = (dateString: string) =>
   new Date(dateString).toLocaleDateString("en-GB", {

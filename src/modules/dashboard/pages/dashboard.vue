@@ -88,20 +88,19 @@ const handleTokenRefresh = async (): Promise<boolean> => {
   try {
     const response = await axios.post(
       refreshUrl,
-      { refreshToken: refreshToken },
+      { refresh_token: refreshToken },
       { headers: { "x-api-key": xAPIkey } }
     );
 
-    const { access_token: accessToken, refresh_token: newRefreshToken } =
-      response.data;
-    if (!accessToken || !newRefreshToken) {
+    const { access_token: accessToken } = response.data;
+
+    if (!accessToken) {
       throw new Error(
         "Refresh endpoint did not return the expected new tokens."
       );
     }
 
     localStorage.setItem(ZOHO_ACCESS_TOKEN_KEY, accessToken);
-    localStorage.setItem(ZOHO_REFRESH_TOKEN_KEY, newRefreshToken);
     console.log("Successfully refreshed both access and refresh tokens.");
     return true;
   } catch (error) {
@@ -171,9 +170,10 @@ const apiFetch = async (
 const fetchInvoices = async (): Promise<void> => {
   isFetchingInvoices.value = true;
   try {
-    const data = await apiFetch("/imports/zoho/invoices", { method: "GET" });
-
-    console.log("Fetched invoices:", data);
+    const data = await apiFetch(
+      `/imports/zoho/invoices?organization_id=${901792562}`,
+      { method: "GET" }
+    );
 
     syncedInvoices.value = (data?.invoices || []).map((inv: any) => ({
       id: inv.invoice_id || `id_${Math.random()}`,
@@ -197,7 +197,8 @@ const fetchInvoices = async (): Promise<void> => {
  */
 const initializeConnection = async (): Promise<void> => {
   const { access_token, refresh_token } = route.query;
-  if (access_token && refresh_token) {
+
+  if (access_token) {
     localStorage.setItem(ZOHO_ACCESS_TOKEN_KEY, access_token as string);
     localStorage.setItem(ZOHO_REFRESH_TOKEN_KEY, refresh_token as string);
     isZohoConnected.value = true;

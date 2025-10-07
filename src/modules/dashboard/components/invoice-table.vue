@@ -18,7 +18,7 @@
           Sync Now
         </button>
 
-        <button
+        <!-- <button
           v-if="isIRNGenerated"
           class="btn btn-primary btn-sm"
           @click="$emit('validate-invoices')"
@@ -34,7 +34,7 @@
           :disabled="!invoices.length || loading"
         >
           Generate IRN
-        </button>
+        </button> -->
       </div>
     </div>
 
@@ -80,10 +80,11 @@
             <th>Amount</th>
             <th>IRN</th>
             <th>Status</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="invoice in invoices" :key="invoice.id">
+          <tr v-for="(invoice, index) in invoices" :key="invoice.id">
             <td class="invoice-id">{{ invoice.number }}</td>
             <td>{{ invoice.customerName }}</td>
             <td>{{ formatDate(invoice.date) }}</td>
@@ -93,6 +94,25 @@
               <span :class="['status-badge', getStatusClass(invoice.status)]">{{
                 invoice.status
               }}</span>
+            </td>
+            <td>
+              <button
+                v-if="invoice.irn"
+                class="btn btn-primary btn-sm"
+                @click="$emit('validate-invoices', index)"
+                :disabled="!invoices.length || loading"
+              >
+                Validate Invoices
+              </button>
+
+              <button
+                v-else
+                class="btn btn-primary btn-sm"
+                @click="$emit('generate-irn', index)"
+                :disabled="!invoices.length || loading"
+              >
+                Generate IRN
+              </button>
             </td>
           </tr>
         </tbody>

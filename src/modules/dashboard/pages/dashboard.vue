@@ -145,19 +145,18 @@ const apiFetch = async (
   } catch (error) {
     // Axios throws an error for non-2xx responses. We check if it's a 401.
     if (axios.isAxiosError(error) && error.response?.status === 401) {
-      const refreshSuccessful = await handleTokenRefresh();
-
-      if (refreshSuccessful) {
-        // Get the NEW token and update the header for the retry
-        config.headers!["zoho_authorization"] = localStorage.getItem(
-          ZOHO_ACCESS_TOKEN_KEY
-        );
-        console.log("Retrying the failed API request with the new token...");
-        const retryResponse = await axios(url, config); // Second Attempt
-        return retryResponse.data;
-      } else {
-        throw new Error("Token refresh failed. The user is now disconnected.");
-      }
+      // const refreshSuccessful = await handleTokenRefresh();
+      // if (refreshSuccessful) {
+      //   // Get the NEW token and update the header for the retry
+      //   config.headers!["zoho_authorization"] = localStorage.getItem(
+      //     ZOHO_ACCESS_TOKEN_KEY
+      //   );
+      //   console.log("Retrying the failed API request with the new token...");
+      //   const retryResponse = await axios(url, config); // Second Attempt
+      //   return retryResponse.data;
+      // } else {
+      //   throw new Error("Token refresh failed. The user is now disconnected.");
+      // }
     }
     // If it's not a 401 or some other error, re-throw it to be caught by the calling function.
     throw error;

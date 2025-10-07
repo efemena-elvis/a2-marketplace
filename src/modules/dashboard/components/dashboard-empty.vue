@@ -77,8 +77,8 @@ const integrations = ref([
 ]);
 
 const handleConnectToZoho = () => {
-  const ZOHO_CLIENT_ID = "1000.DF660IXJ0EV5HHP1XALIX8CDM6E3RK";
-  // const ZOHO_CLIENT_ID = "1000.NUTIKOOKG03R4X29QF661FJLTML57V";
+  // const ZOHO_CLIENT_ID = "1000.DF660IXJ0EV5HHP1XALIX8CDM6E3RK";
+  const ZOHO_CLIENT_ID = "1000.NUTIKOOKG03R4X29QF661FJLTML57V";
   const ZOHO_REDIRECT_URI =
     "https://staging-api.a2comply.com/invoices/v1/imports/zoho/auth";
 

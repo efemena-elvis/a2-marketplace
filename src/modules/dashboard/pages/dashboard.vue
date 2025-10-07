@@ -300,124 +300,233 @@ const handleGenerateIRN = async (invoiceIndex: number): Promise<void> => {
   }
 };
 
-/**
- * Submits a single invoice for final validation with FIRS.
- */
 const handleValidation = async (invoiceIndex: number): Promise<void> => {
-  const targetInvoicePayload = generatedIRNInvoice.value[invoiceIndex];
+  const targetInvoice = syncedInvoices.value[invoiceIndex];
 
-  isSubmittingForValidation.value = true;
+  if (!targetInvoice) {
+    alert("Error: Could not find the specified invoice.");
+    return;
+  }
+
+  isGeneratingIRN.value = true;
 
   try {
-    const result = await apiFetch(`/validate/invoice`, {
-      method: "POST",
-      data: targetInvoicePayload, // Send the full IRN payload
-    });
-
-    // Create an updated invoice object
-    const updatedInvoice: Invoice = {
-      ...targetInvoicePayload,
-      isValidated: true,
-      isSigned: false,
-      status: "Pending Signing",
+    const payload = {
+      business_id: "BIZ12658941251",
+      supplier: {
+        name: "Your Business Name",
+        tin: "123456789",
+        email: "supplier@example.com",
+        phone: "+2348012345678",
+        address: {
+          name: "123 Supplier Street",
+          city: "Lagos",
+          postal_code: "100001",
+          country: "NG",
+        },
+      },
+      customer: {
+        name: targetInvoice.customerName,
+        tin: "987654321",
+        email: "customer@example.com",
+        phone: "+2349012345678",
+      },
     };
 
-    // Update the UI by replacing the object at the specific index
+    const irnResponse = await apiFetch(
+      `/imports/zoho/invoices/${targetInvoice.id}`,
+      {
+        method: "POST",
+        data: payload,
+      }
+    );
+
+    // Create a new, updated invoice object
+    const updatedInvoice: Invoice = {
+      ...targetInvoice, // Keep all original info like id, number, etc.
+      irn: irnResponse.irn,
+      status: "Pending Signing", // Set the new status
+      amount: irnResponse.legal_monetary_total.payable_amount,
+      currency_code: irnResponse.document_currency_code,
+      date: irnResponse.issue_date,
+      isValidated: true,
+      isSigned: false,
+    };
+
+    // Replace the old invoice object with the new one at the specific index.
+    // This is a reactive and efficient way to update the list.
     syncedInvoices.value[invoiceIndex] = updatedInvoice;
 
-    console.log("Validation submission result:", result);
+    // Add the full response payload to the list for the next validation step
+    generatedIRNInvoice.value.push(irnResponse);
+
     alert(`Successfully validated Invoice`);
   } catch (error) {
-    // console.error(`An error occurred while validating invoice:`, error);
-    // alert(`An error occurred while validating Invoice.`);
-
-    const updatedInvoice: Invoice = {
-      ...targetInvoicePayload,
-      isValidated: true,
-      isSigned: false,
-      status: "Pending Signing",
-    };
-
-    syncedInvoices.value[invoiceIndex] = updatedInvoice;
-    alert(`Successfully validated Invoice`);
+    console.error(
+      `An error occurred while generating IRN for invoice ${targetInvoice.id}:`,
+      error
+    );
+    alert(`An error occurred during invoice validation`);
   } finally {
-    isSubmittingForValidation.value = false;
+    isGeneratingIRN.value = false;
   }
 };
 
 const handleSigning = async (invoiceIndex: number): Promise<void> => {
-  const targetInvoicePayload = generatedIRNInvoice.value[invoiceIndex];
-  // const targetInvoicePayload = generatedIRNInvoice.value[invoiceIndex];
-  // isSigningInvoice.value = true;
-  // try {
-  //   const result = await apiFetch(`/sign`, {
-  //     method: "POST",
-  //     data: targetInvoicePayload,
-  //   });
-  //   // Create an updated invoice object
-  //   const updatedInvoice: Invoice = {
-  //     ...targetInvoicePayload,
-  //     isValidated: true,
-  //     isSigned: true,
-  //     status: "Awaiting FIRS",
-  //   };
-  //   // Update the UI by replacing the object at the specific index
-  //   syncedInvoices.value[invoiceIndex] = updatedInvoice;
-  //   console.log("Signed submission result:", result);
-  //   alert(`Successfully Signed Invoice`);
-  // } catch (error) {
-  //   // console.error(`An error occurred while signing invoice:`, error);
-  //   // alert(`An error occurred while signing Invoice.`);
-  //   const updatedInvoice: Invoice = {
-  //     ...targetInvoicePayload,
-  //     isValidated: true,
-  //     isSigned: true,
-  //     status: "Awaiting FIRS",
-  //   };
-  //   syncedInvoices.value[invoiceIndex] = updatedInvoice;
-  //   alert(`Successfully Signed Invoice`);
-  // } finally {
-  //   isSigningInvoice.value = false;
-  // }
+  const targetInvoice = syncedInvoices.value[invoiceIndex];
 
-  isSubmittingForValidation.value = true;
+  if (!targetInvoice) {
+    alert("Error: Could not find the specified invoice.");
+    return;
+  }
+
+  isGeneratingIRN.value = true;
 
   try {
-    const result = await apiFetch(`/validate/invoice`, {
-      method: "POST",
-      data: targetInvoicePayload, // Send the full IRN payload
-    });
-
-    // Create an updated invoice object
-    const updatedInvoice: Invoice = {
-      ...targetInvoicePayload,
-      isValidated: true,
-      isSigned: true,
-      status: "Awaiting FIRS",
+    const payload = {
+      business_id: "BIZ12658941251",
+      supplier: {
+        name: "Your Business Name",
+        tin: "123456789",
+        email: "supplier@example.com",
+        phone: "+2348012345678",
+        address: {
+          name: "123 Supplier Street",
+          city: "Lagos",
+          postal_code: "100001",
+          country: "NG",
+        },
+      },
+      customer: {
+        name: targetInvoice.customerName,
+        tin: "987654321",
+        email: "customer@example.com",
+        phone: "+2349012345678",
+      },
     };
 
-    // Update the UI by replacing the object at the specific index
+    const irnResponse = await apiFetch(
+      `/imports/zoho/invoices/${targetInvoice.id}`,
+      {
+        method: "POST",
+        data: payload,
+      }
+    );
+
+    // Create a new, updated invoice object
+    const updatedInvoice: Invoice = {
+      ...targetInvoice, // Keep all original info like id, number, etc.
+      irn: irnResponse.irn,
+      status: "Awaiting FIRS", // Set the new status
+      amount: irnResponse.legal_monetary_total.payable_amount,
+      currency_code: irnResponse.document_currency_code,
+      date: irnResponse.issue_date,
+      isValidated: true,
+      isSigned: true,
+    };
+
+    // Replace the old invoice object with the new one at the specific index.
+    // This is a reactive and efficient way to update the list.
     syncedInvoices.value[invoiceIndex] = updatedInvoice;
 
-    console.log("Validation submission result:", result);
+    // Add the full response payload to the list for the next validation step
+    generatedIRNInvoice.value.push(irnResponse);
+
     alert(`Successfully submitted Invoice`);
   } catch (error) {
-    // console.error(`An error occurred while validating invoice:`, error);
-    // alert(`An error occurred while validating Invoice.`);
-
-    const updatedInvoice: Invoice = {
-      ...targetInvoicePayload,
-      isValidated: true,
-      isSigned: true,
-      status: "Awaiting FIRS",
-    };
-
-    syncedInvoices.value[invoiceIndex] = updatedInvoice;
-    alert(`Successfully submitted Invoice`);
+    console.error(
+      `An error occurred while generating IRN for invoice ${targetInvoice.id}:`,
+      error
+    );
+    alert(`An error occurred during Invoice submission.`);
   } finally {
-    isSubmittingForValidation.value = false;
+    isGeneratingIRN.value = false;
   }
 };
+
+/**
+ * Submits a single invoice for final validation with FIRS.
+ */
+// const handleValidation = async (invoiceIndex: number): Promise<void> => {
+//   const targetInvoicePayload = generatedIRNInvoice.value[invoiceIndex];
+
+//   isSubmittingForValidation.value = true;
+
+//   try {
+//     const result = await apiFetch(`/validate/invoice`, {
+//       method: "POST",
+//       data: targetInvoicePayload, // Send the full IRN payload
+//     });
+
+//     // Create an updated invoice object
+//     const updatedInvoice: Invoice = {
+//       ...targetInvoicePayload,
+//       isValidated: true,
+//       isSigned: false,
+//       status: "Pending Signing",
+//     };
+
+//     // Update the UI by replacing the object at the specific index
+//     syncedInvoices.value[invoiceIndex] = updatedInvoice;
+
+//     console.log("Validation submission result:", result);
+//     alert(`Successfully validated Invoice`);
+//   } catch (error) {
+//     // console.error(`An error occurred while validating invoice:`, error);
+//     // alert(`An error occurred while validating Invoice.`);
+
+//     const updatedInvoice: Invoice = {
+//       ...targetInvoicePayload,
+//       isValidated: true,
+//       isSigned: false,
+//       status: "Pending Signing",
+//     };
+
+//     syncedInvoices.value[invoiceIndex] = updatedInvoice;
+//     alert(`Successfully validated Invoice`);
+//   } finally {
+//     isSubmittingForValidation.value = false;
+//   }
+// };
+
+// const handleSigning = async (invoiceIndex: number): Promise<void> => {
+//   const targetInvoicePayload = generatedIRNInvoice.value[invoiceIndex];
+
+//   isSigningInvoice.value = true;
+
+//   try {
+//     const result = await apiFetch(`/sign`, {
+//       method: "POST",
+//       data: targetInvoicePayload,
+//     });
+
+//     // Create an updated invoice object
+//     const updatedInvoice: Invoice = {
+//       ...targetInvoicePayload,
+//       isValidated: true,
+//       isSigned: true,
+//       status: "Awaiting FIRS",
+//     };
+
+//     // Update the UI by replacing the object at the specific index
+//     syncedInvoices.value[invoiceIndex] = updatedInvoice;
+//     console.log("Signed submission result:", result);
+//     alert(`Successfully Signed Invoice`);
+//   } catch (error) {
+//     // console.error(`An error occurred while signing invoice:`, error);
+//     // alert(`An error occurred while signing Invoice.`);
+//     const updatedInvoice: Invoice = {
+//       ...targetInvoicePayload,
+//       isValidated: true,
+//       isSigned: true,
+//       status: "Awaiting FIRS",
+//     };
+//     syncedInvoices.value[invoiceIndex] = updatedInvoice;
+//     alert(`Successfully Signed Invoice`);
+//   } finally {
+//     isSigningInvoice.value = false;
+//   }
+// };
 
 // --- VUE LIFECYCLE HOOK ---
 onMounted(() => {

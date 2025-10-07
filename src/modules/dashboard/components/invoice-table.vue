@@ -75,7 +75,7 @@
         <thead>
           <tr>
             <th>Invoice #</th>
-            <th>Customer</th>
+            <!-- <th>Customer</th> -->
             <th>Date</th>
             <th>Amount</th>
             <th>IRN</th>
@@ -86,7 +86,7 @@
         <tbody>
           <tr v-for="(invoice, index) in invoices" :key="invoice.id">
             <td class="invoice-id">{{ invoice.number }}</td>
-            <td>{{ invoice.customerName }}</td>
+            <!-- <td>{{ invoice.customerName }}</td> -->
             <td>{{ formatDate(invoice.date) }}</td>
             <td>{{ formatCurrency(invoice.amount, invoice.currency_code) }}</td>
             <td>{{ invoice.irn || "---" }}</td>

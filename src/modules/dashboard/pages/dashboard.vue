@@ -216,121 +216,108 @@ const handleManualSync = (): void => {
 };
 
 /**
- * NEW: Generates IRN for all synced invoices by sending them to the validation endpoint.
+ * Generates an IRN for a single invoice based on its index in the array.
  */
-const handleGenerateIRN = async (): Promise<void> => {
-  if (!syncedInvoices.value.length) {
-    alert("There are no invoices to process.");
+const handleGenerateIRN = async (invoiceIndex: number): Promise<void> => {
+  const targetInvoice = syncedInvoices.value[invoiceIndex];
+
+  if (!targetInvoice) {
+    alert("Error: Could not find the specified invoice.");
     return;
   }
 
   isGeneratingIRN.value = true;
 
   try {
-    // Create an array of promises, one for each API call
-    const promises = syncedInvoices.value.map((invoice) => {
-      // Define the request body for each invoice
-      const payload = {
-        business_id: "BIZ12658941251",
-        supplier: {
-          name: "Your Business Name",
-          tin: "123456789",
-          email: "supplier@example.com",
-          phone: "08012345678",
-          address: {
-            name: "123 Supplier Street",
-            city: "Lagos",
-            postal_code: "100001",
-            country: "NG",
-          },
+    const payload = {
+      business_id: "BIZ12658941251",
+      supplier: {
+        name: "Your Business Name",
+        tin: "123456789",
+        email: "supplier@example.com",
+        phone: "08012345678",
+        address: {
+          name: "123 Supplier Street",
+          city: "Lagos",
+          postal_code: "100001",
+          country: "NG",
         },
-        customer: {
-          name: invoice.customerName,
-          tin: "987654321",
-          email: "customer@example.com",
-          phone: "09012345678",
-        },
-      };
+      },
+      customer: {
+        name: targetInvoice.customerName,
+        tin: "987654321",
+        email: "customer@example.com",
+        phone: "09012345678",
+      },
+    };
 
-      // Return the promise from apiFetch
-      return apiFetch(`/imports/zoho/invoices/${invoice.id}`, {
+    const irnResponse = await apiFetch(
+      `/imports/zoho/invoices/${targetInvoice.id}`,
+      {
         method: "POST",
         data: payload,
-      });
-    });
-
-    // Wait for ALL the promises to resolve
-    const results = await Promise.all(promises);
-
-    const updatedInvoices = syncedInvoices.value.map(
-      (originalInvoice, index) => {
-        const irnResponse = results[index];
-
-        return {
-          ...originalInvoice,
-          irn: irnResponse.irn,
-          status: "Pending Validation",
-          amount: irnResponse.legal_monetary_total.payable_amount,
-          currency_code: irnResponse.document_currency_code,
-          date: irnResponse.issue_date,
-        } as Invoice;
       }
     );
 
-    generatedIRNInvoice.value = results;
+    // Create a new, updated invoice object
+    const updatedInvoice: Invoice = {
+      ...targetInvoice, // Keep all original info like id, number, etc.
+      irn: irnResponse.irn,
+      status: "Pending Validation", // Set the new status
+      amount: irnResponse.legal_monetary_total.payable_amount,
+      currency_code: irnResponse.document_currency_code,
+      date: irnResponse.issue_date,
+    };
 
-    // Replace the old array with the newly merged one to trigger UI update
-    syncedInvoices.value = updatedInvoices;
+    // Replace the old invoice object with the new one at the specific index.
+    // This is a reactive and efficient way to update the list.
+    syncedInvoices.value[invoiceIndex] = updatedInvoice;
+
+    // Add the full response payload to the list for the next validation step
+    generatedIRNInvoice.value.push(irnResponse);
+
+    alert(`Successfully generated IRN for Invoice #${targetInvoice.number}.`);
   } catch (error) {
     console.error(
-      "An error occurred while generating IRN for one or more invoices:",
+      `An error occurred while generating IRN for invoice ${targetInvoice.id}:`,
       error
     );
     alert(
-      "An error occurred during validation. Please check the console for details."
+      `An error occurred during IRN generation for Invoice #${targetInvoice.number}.`
     );
   } finally {
     isGeneratingIRN.value = false;
   }
 };
 
-const handleValidation = async (): Promise<void> => {
-  if (!generatedIRNInvoice.value.length) {
-    alert("There are no invoices to validate.");
-    return;
-  }
+/**
+ * Submits a single invoice for final validation with FIRS.
+ */
+const handleValidation = async (invoiceIndex: number): Promise<void> => {
+  const targetInvoicePayload = generatedIRNInvoice.value[invoiceIndex];
 
   isSubmittingForValidation.value = true;
 
   try {
-    // Create an array of promises, one for each API call
-    const promises = generatedIRNInvoice.value.map((invoice) => {
-      return apiFetch(`/validate/invoice`, {
-        method: "POST",
-        data: invoice,
-      });
+    const result = await apiFetch(`/validate/invoice`, {
+      method: "POST",
+      data: targetInvoicePayload, // Send the full IRN payload
     });
 
-    // Wait for ALL the promises to resolve
-    await Promise.all(promises);
+    // Create an updated invoice object
+    const updatedInvoice: Invoice = {
+      ...targetInvoicePayload,
+      status: "Awaiting FIRS",
+    };
 
-    const updatedInvoices = syncedInvoices.value.map((originalInvoice) => {
-      return {
-        ...originalInvoice,
-        status: "Awaiting FIRS",
-      } as Invoice;
-    });
+    // Update the UI by replacing the object at the specific index
+    syncedInvoices.value[invoiceIndex] = updatedInvoice;
 
-    // Replace the old array with the newly merged one to trigger UI update
-    syncedInvoices.value = updatedInvoices;
+    console.log("Validation submission result:", result);
+    alert(`Successfully validated Invoice`);
   } catch (error) {
-    console.error(
-      "An error occurred while validating invoice for one or more invoices:",
-      error
-    );
-    alert(
-      "An error occurred during validation. Please check the console for details."
-    );
+    console.error(`An error occurred while validating invoice:`, error);
+    alert(`An error occurred while submitting Invoice.`);
   } finally {
     isSubmittingForValidation.value = false;
   }

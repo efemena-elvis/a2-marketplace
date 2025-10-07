@@ -18,6 +18,7 @@
         @sync-now="handleManualSync"
         @generate-irn="handleGenerateIRN"
         @validate-invoices="handleValidation"
+        @sign-invoices="handleSigning"
       />
     </div>
   </div>
@@ -38,12 +39,16 @@ interface Invoice {
   date: string;
   amount: number;
   irn?: string;
+  isValidated?: boolean;
+  isSigned?: boolean;
   currency_code: string;
+
   status:
     | "Approved"
     | "Rejected"
     | "Pending Validation"
     | "Pending IRN"
+    | "Pending Signing"
     | "Awaiting FIRS";
 }
 
@@ -67,6 +72,7 @@ const isGeneratingIRN = ref<boolean>(false);
 const generatedIRNInvoice = ref<any[]>([]);
 
 const isSubmittingForValidation = ref<boolean>(false);
+const isSigningInvoice = ref<boolean>(false);
 
 // --- CORE API AND TOKEN REFRESH LOGIC ---
 
@@ -307,7 +313,9 @@ const handleValidation = async (invoiceIndex: number): Promise<void> => {
     // Create an updated invoice object
     const updatedInvoice: Invoice = {
       ...targetInvoicePayload,
-      status: "Awaiting FIRS",
+      isValidated: true,
+      isSigned: false,
+      status: "Pending Signing",
     };
 
     // Update the UI by replacing the object at the specific index
@@ -317,9 +325,41 @@ const handleValidation = async (invoiceIndex: number): Promise<void> => {
     alert(`Successfully validated Invoice`);
   } catch (error) {
     console.error(`An error occurred while validating invoice:`, error);
-    alert(`An error occurred while submitting Invoice.`);
+    alert(`An error occurred while validating Invoice.`);
   } finally {
     isSubmittingForValidation.value = false;
+  }
+};
+
+const handleSigning = async (invoiceIndex: number): Promise<void> => {
+  const targetInvoicePayload = generatedIRNInvoice.value[invoiceIndex];
+
+  isSigningInvoice.value = true;
+
+  try {
+    const result = await apiFetch(`/sign`, {
+      method: "POST",
+      data: targetInvoicePayload,
+    });
+
+    // Create an updated invoice object
+    const updatedInvoice: Invoice = {
+      ...targetInvoicePayload,
+      isValidated: true,
+      isSigned: true,
+      status: "Awaiting FIRS",
+    };
+
+    // Update the UI by replacing the object at the specific index
+    syncedInvoices.value[invoiceIndex] = updatedInvoice;
+
+    console.log("Signed submission result:", result);
+    alert(`Successfully Signed Invoice`);
+  } catch (error) {
+    console.error(`An error occurred while signing invoice:`, error);
+    alert(`An error occurred while signing Invoice.`);
+  } finally {
+    isSigningInvoice.value = false;
   }
 };
 

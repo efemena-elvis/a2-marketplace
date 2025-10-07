@@ -96,23 +96,39 @@
               }}</span>
             </td>
             <td>
-              <button
-                v-if="invoice.irn"
-                class="btn btn-primary btn-sm"
-                @click="$emit('validate-invoices', index)"
-                :disabled="!invoices.length || loading"
-              >
-                Validate Invoices
-              </button>
+              <template v-if="!invoice.isSigned && !invoice.isValidated">
+                <button
+                  v-if="invoice.irn"
+                  class="btn btn-primary btn-sm"
+                  @click="$emit('validate-invoices', index)"
+                  :disabled="!invoices.length || loading"
+                >
+                  Validate Invoices
+                </button>
 
-              <button
-                v-else
-                class="btn btn-primary btn-sm"
-                @click="$emit('generate-irn', index)"
-                :disabled="!invoices.length || loading"
-              >
-                Generate IRN
-              </button>
+                <button
+                  v-else
+                  class="btn btn-primary btn-sm"
+                  @click="$emit('generate-irn', index)"
+                  :disabled="!invoices.length || loading"
+                >
+                  Generate IRN
+                </button>
+              </template>
+
+              <template v-else-if="invoice.isSigned && invoice.isValidated">
+                <button class="btn btn-primary btn-sm" disabled>Done</button>
+              </template>
+
+              <template v-else>
+                <button
+                  class="btn btn-primary btn-sm"
+                  @click="$emit('sign-invoices', index)"
+                  :disabled="!invoices.length || loading"
+                >
+                  Sign Invoice
+                </button>
+              </template>
             </td>
           </tr>
         </tbody>
@@ -132,16 +148,19 @@ interface Invoice {
   amount: number;
   irn?: string;
   currency_code: string;
+  isValidated?: boolean;
+  isSigned?: boolean;
   status:
     | "Approved"
     | "Rejected"
     | "Pending Validation"
     | "Pending IRN"
+    | "Pending Signing"
     | "Awaiting FIRS";
 }
 
 const props = defineProps<{ invoices: Invoice[]; loading: boolean }>();
-defineEmits(["sync-now", "validate-invoices", "generate-irn"]);
+defineEmits(["sync-now", "validate-invoices", "sign-invoices", "generate-irn"]);
 
 const isIRNGenerated = computed(() => {
   return props.invoices.some((invoice) => invoice.irn);
@@ -153,6 +172,7 @@ const getStatusClass = (status: Invoice["status"]) => {
     Rejected: "status-rejected",
     "Pending Validation": "status-pending",
     "Pending IRN": "status-irn",
+    "Pending Signing": "status-signing",
     "Awaiting FIRS": "status-awaiting",
   };
   return statusMap[status] || "status-default";
@@ -222,7 +242,8 @@ td.invoice-id {
   @apply bg-red-100 text-red-900;
 }
 .status-pending,
-.status-irn {
+.status-irn,
+.status-signing {
   @apply bg-yellow-100 text-yellow-900;
 }
 .status-awaiting {

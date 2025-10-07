@@ -83,7 +83,7 @@ const handleConnectToZoho = () => {
     "https://staging-api.a2comply.com/invoices/v1/imports/zoho/auth";
 
   const SCOPES =
-    "ZohoInvoice.invoices.READ,ZohoInvoice.invoices.UPDATE,ZohoInvoice.settings.READ,ZohoBooks.settings.READ,ZohoBooks.invoices.UPDATE,ZohoBooks.invoices.READ";
+    "ZohoInvoice.invoices.READ,ZohoInvoice.invoices.UPDATE,ZohoInvoice.settings.READ";
 
   const authUrl = `https://accounts.zoho.com/oauth/v2/auth?scope=${SCOPES}&client_id=${ZOHO_CLIENT_ID}&response_type=code&redirect_uri=${ZOHO_REDIRECT_URI}&access_type=offline`;
 

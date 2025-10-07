@@ -170,10 +170,7 @@ const apiFetch = async (
 const fetchInvoices = async (): Promise<void> => {
   isFetchingInvoices.value = true;
   try {
-    const data = await apiFetch(
-      `/imports/zoho/invoices?organization_id=${901792562}`,
-      { method: "GET" }
-    );
+    const data = await apiFetch(`/imports/zoho/invoices`, { method: "GET" });
 
     syncedInvoices.value = (data?.invoices || []).map((inv: any) => ({
       id: inv.invoice_id || `id_${Math.random()}`,

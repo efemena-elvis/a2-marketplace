@@ -2,7 +2,7 @@
   <div class="table-empty">
     <!-- EMPTY IMAGE -->
     <div class="img-wrapper">
-      <img :src="renderImg(`${customImg}`)" alt="empty-table" />
+      <!-- <img :src="renderImg(`${customImg}`)" alt="empty-table" /> -->
     </div>
 
     <!-- TITLE TEXT -->
@@ -40,7 +40,7 @@ defineProps({
   },
   customImg: {
     type: String,
-    default: "empty-box.png",
+    default: "",
   },
   actionText: {
     type: String,

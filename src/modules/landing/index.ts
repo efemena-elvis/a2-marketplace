@@ -3,6 +3,7 @@ import { IRouteType } from "@/models/route-type";
 const landingRoutes: IRouteType[] = [
   {
     path: "/",
+    alias: "/home",
     component: () =>
       import(
         /* webpackChunkName: "landing-layout" */ "@/modules/landing/layouts/landing-layout.vue"
@@ -30,19 +31,6 @@ const landingRoutes: IRouteType[] = [
         meta: {
           guest: true,
           title: "Pricing",
-        },
-      },
-
-      {
-        path: "/developers",
-        name: "Developers",
-        component: () =>
-          import(
-            /* webpackChunkName: "landing-module" */ "@/modules/landing/pages/developers.vue"
-          ),
-        meta: {
-          guest: true,
-          title: "Developers",
         },
       },
 

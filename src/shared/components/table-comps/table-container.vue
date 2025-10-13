@@ -11,7 +11,9 @@
               <tr>
                 <td v-for="(header, index) in tableHeader" :key="index">
                   <div class="table-header">
-                    <div>{{ header.title }}</div>
+                    <slot :name="`header-${header.slug}`" :header="header">
+                      <div>{{ header.title }}</div>
+                    </slot>
                     <div
                       v-if="header.sortable"
                       class="table-sort-icon icon-double-caret-fill"

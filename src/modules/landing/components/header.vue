@@ -11,22 +11,19 @@
             src="@/shared/assets/images/brand-logo.png"
             alt="CISL Marketplace"
           />
-          <!-- <div class="brand-name">A2 Marketplace</div> -->
         </div>
 
         <!-- NAVIGATION LINKS -->
         <div class="navigation">
-          <!-- NAVIGATION ITEMS -->
+          <!-- NAVIGATION ITEMS - NOW DYNAMIC -->
           <div class="nav-items">
-            <router-link to="/" class="nav-link nav-link-active"
-              >Home</router-link
+            <router-link
+              v-for="link in navLinks"
+              :key="link.name"
+              :to="link.path"
+              class="nav-link"
+              >{{ link.name }}</router-link
             >
-            <!-- <router-link to="#features" class="nav-link">Features</router-link> -->
-            <router-link to="/pricing" class="nav-link">Pricing</router-link>
-            <router-link to="/developers" class="nav-link"
-              >Developers</router-link
-            >
-            <router-link to="/contact" class="nav-link">Contact</router-link>
           </div>
 
           <!-- NAVIGATION ACTIONS -->
@@ -34,7 +31,6 @@
             <router-link to="/login" class="btn btn-secondary btn-sm"
               >Sign In</router-link
             >
-
             <router-link to="/create-account" class="btn btn-primary btn-sm"
               >Create Account</router-link
             >
@@ -52,6 +48,13 @@
 
 <script setup>
 import { ref } from "vue";
+
+// Define navigation links as an array of objects
+const navLinks = ref([
+  { name: "Home", path: "/home" },
+  { name: "Pricing", path: "/pricing" },
+  { name: "Contact", path: "/contact" },
+]);
 </script>
 
 <style lang="scss" scoped>
@@ -60,14 +63,8 @@ import { ref } from "vue";
 
   .brand-logo {
     @apply flex justify-start items-center gap-x-2;
-
     img {
-      // @apply size-12 lg:size-11 object-contain;
       @apply w-[220px] h-auto;
-    }
-
-    .brand-name {
-      @apply text-primary-900 font-medium text-xl lg:text-base mdLg:text-lg;
     }
   }
 
@@ -80,8 +77,10 @@ import { ref } from "vue";
       .nav-link {
         @apply text-grey-900/80 text-base lg:text-[15px] transition duration-300 ease-in-out px-3.5 lg:px-3 py-2 rounded-full hover:bg-primary-50;
 
-        &-active {
-          @apply bg-primary-50 font-semibold;
+        // This styles the active class provided automatically by Vue Router
+        // It will be applied to the link that matches the current URL.
+        &.router-link-exact-active {
+          @apply bg-primary-50 font-medium text-primary-900;
         }
       }
     }
@@ -92,7 +91,6 @@ import { ref } from "vue";
 
     .mobile-nav-menu {
       @apply hidden mdLg:block cursor-pointer;
-
       .icon {
         @apply text-4xl text-grey-900 font-medium;
       }

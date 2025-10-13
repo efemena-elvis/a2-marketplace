@@ -359,11 +359,11 @@ class ServiceApi {
         const originalConfig = error.config as CustomAxiosRequestConfig;
 
         if (originalConfig && error.response) {
-          // if (error.response.status === 401 && !originalConfig._retry) {
-          //   originalConfig._retry = true;
-          //   logOutUser();
-          //   return axios(originalConfig);
-          // }
+          if (error.response.status === 401 && !originalConfig._retry) {
+            originalConfig._retry = true;
+            logOutUser();
+            return axios(originalConfig);
+          }
         }
 
         return Promise.reject(error);

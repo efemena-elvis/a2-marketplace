@@ -90,15 +90,13 @@ input[type="checkbox"],
 
   &:after {
     content: "";
-    @apply block rounded-lg overflow-hidden border border-grey-300;
-    @include draw-shape(24);
+    @apply size-6 min-w-6 min-h-6 block rounded-lg overflow-hidden border border-grey-300;
     transition: all 240ms;
   }
 
   &:before {
     content: "";
-    @apply absolute top-[23%] left-[35%] z-10 table border-t-0 border-l-0 scale-0 border-2 border-neutral-10 transition duration-300 ease-in-out;
-    @include draw-shape(6, 11);
+    @apply absolute top-[23%] left-[35%] z-10 table border-t-0 border-l-0 scale-0 border-2 border-neutral-10 transition duration-300 ease-in-out w-1.5 h-[11px];
   }
 
   &:hover {
@@ -133,13 +131,11 @@ input[type="checkbox"],
 
   &.sm-size {
     &:after {
-      @apply rounded-md;
-      @include draw-shape(20);
+      @apply rounded-md size-5 min-w-5 min-h-5;
     }
 
     &:before {
-      @apply top-[22%] left-[40%];
-      @include draw-shape(4, 8);
+      @apply top-[22%] left-[40%] w-1 h-2;
     }
   }
 }

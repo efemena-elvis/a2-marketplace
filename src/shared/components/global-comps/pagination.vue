@@ -80,7 +80,7 @@ interface IPaginationType {
   };
 }
 
-const props = defineProps<IPaginationType>();
+defineProps<IPaginationType>();
 </script>
 
 <style lang="scss" scoped>

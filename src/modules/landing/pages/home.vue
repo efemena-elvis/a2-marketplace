@@ -12,10 +12,12 @@
       </div>
 
       <div class="cta-row">
-        <router-link to="/select-provider" class="btn btn-primary btn-lg"
+        <router-link to="/create-account" class="btn btn-primary btn-lg"
           >Get Started</router-link
         >
-        <button class="btn btn-secondary btn-lg">Learn More</button>
+        <router-link to="/#features" class="btn btn-secondary btn-lg"
+          >Learn More</router-link
+        >
       </div>
     </div>
 

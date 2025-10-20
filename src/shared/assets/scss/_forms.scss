@@ -131,11 +131,11 @@ input[type="checkbox"],
 
   &.sm-size {
     &:after {
-      @apply rounded-md size-5 min-w-5 min-h-5;
+      @apply rounded-md size-[19px] min-w-[19px] min-h-[19px];
     }
 
     &:before {
-      @apply top-[22%] left-[40%] w-1 h-2;
+      @apply top-[25%] left-[42%] w-[2.5px] h-[7px];
     }
   }
 }

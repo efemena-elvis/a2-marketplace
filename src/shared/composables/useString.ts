@@ -137,7 +137,7 @@ export function useString() {
   };
 
   const getBoldTableText = (text: string, color?: string) => {
-    return `<span class='font-medium ${color || "text-grey-800/85"}'>${text}</span>`;
+    return `<span class='font-semibold ${color || "text-grey-800"}'>${text}</span>`;
   };
 
   const getStatus = (status: string, suffixText?: string): string => {
@@ -168,6 +168,15 @@ export function useString() {
     return `<a class='text-green-600 underline cursor-pointer' href='${link}' target='_blank' rel='noopener noreferrer'>${linkTitle ?? "Preview"}</a>`;
   };
 
+  const maskCode = (code: string): string => {
+    if (typeof code !== "string") return "";
+    if (code.length <= 8) return code; // skip masking if too short
+
+    const prefix = code.slice(0, 3);
+    const suffix = code.slice(-5);
+    return `${prefix}....${suffix}`;
+  };
+
   return {
     logOutUser,
     checkAuthTimeout,
@@ -186,5 +195,6 @@ export function useString() {
     transactionFlowIcon,
     notAvailable,
     createPreviewLink,
+    maskCode,
   };
 }

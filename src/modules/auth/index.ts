@@ -34,15 +34,15 @@ const authRoutes: IRouteType[] = [
         },
       },
       {
-        path: "/create-password",
-        name: "CreatePassword",
+        path: "/verify-account/:user_id",
+        name: "VerifyAccount",
         component: () =>
           import(
-            /* webpackChunkName: "auth-module" */ "@/modules/auth/pages/create-password.vue"
+            /* webpackChunkName: "auth-module" */ "@/modules/auth/pages/verify-account.vue"
           ),
         meta: {
           guest: true,
-          title: "Create Password",
+          title: "Verify Email",
         },
       },
       {
@@ -71,16 +71,21 @@ const authRoutes: IRouteType[] = [
       },
     ],
   },
+
   {
-    path: "/select-provider",
-    name: "SelectProvider",
+    path: "/provider-connect",
+    name: "ProviderConnect",
     component: () =>
       import(
-        /* webpackChunkName: "auth-module" */ "@/modules/auth/pages/select-provider.vue"
+        /* webpackChunkName: "base-layout" */ "@/modules/auth/pages/provider-connect.vue"
       ),
     meta: {
-      guest: true,
-      title: "Select a Provider",
+      open: true,
+      title: "Provider Connect",
+      pageMeta: {
+        title: "Provider Connect",
+        description: "CISL Provider Connect",
+      },
     },
   },
 ];

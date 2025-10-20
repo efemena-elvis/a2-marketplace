@@ -51,7 +51,7 @@ onMounted(() => setPageBackgroundColor("#EDF0F2"));
 
     .brand-logo {
       img {
-        @apply size-24 lg:size-16 sm:size-14;
+        @apply size-20 lg:size-16 sm:size-14;
         // @apply size-20 lg:size-16 sm:size-14;
       }
     }

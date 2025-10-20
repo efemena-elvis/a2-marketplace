@@ -7,7 +7,7 @@
 
       <div class="topbar--left-wrapper">
         <div class="page-title">
-          Welcome, <span class="business-name">Megatech Enterprises</span>
+          Welcome, <span class="business-name">{{ companyName }}</span>
         </div>
       </div>
     </div>
@@ -17,16 +17,20 @@
         <div class="icon-user"></div>
       </div>
 
-      <div class="action-text">Log Out</div>
+      <div class="action-text" @click="handleLogout">Log Out</div>
     </div>
   </div>
+
+  <PageOverlay loadingText="Logging out..." v-if="isPageLoading" />
 </template>
 
 <script lang="ts" setup>
-import { inject } from "vue";
+import { inject, ref } from "vue";
+import { Emitter } from "mitt";
 import { useAuthStore } from "@/modules/auth/store";
 import useEvents from "@/shared/composables/useEvents";
-import { Emitter } from "mitt";
+import { useProfile } from "@/shared/composables/useProfile";
+import PageOverlay from "@/shared/components/global-comps/page-overlay.vue";
 
 // Define the type of the event bus
 type Events = {
@@ -36,10 +40,27 @@ type Events = {
 const eventBus = inject<Emitter<Events>>("eventBus");
 
 const { logoutUser } = useAuthStore();
-const { pushToastAlert, processAPIRequest } = useEvents();
+const { processAPIRequest } = useEvents();
+
+const { getUser } = useProfile();
+const { companyName } = getUser();
+
+const isPageLoading = ref<boolean>(false);
 
 const triggerMenuSidebar = () => {
   eventBus?.emit("triggerSidebar");
+};
+
+const handleLogout = async () => {
+  isPageLoading.value = true;
+
+  const response = await processAPIRequest({
+    action: logoutUser,
+  });
+
+  // if (response.status !== 200) {
+  //   isPageLoading.value = false;
+  // }
 };
 </script>
 

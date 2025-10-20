@@ -1,16 +1,9 @@
 <template>
-  <div class="invoice-tracker-page">
-    <!-- PAGE HEADER -->
-    <div class="page-header">
-      <div>
-        <h1 class="page-title">Invoice Tracker</h1>
-        <p class="page-description">
-          Track the real-time status of all invoices submitted to FIRS for final
-          validation.
-        </p>
-      </div>
-    </div>
-
+  <PageLayout
+    title="Invoice Tracker"
+    description="Track the real-time status of all invoices submitted to FIRS for final validation."
+    :show-action-btn="false"
+  >
     <!-- TABLE SECTION -->
     <div class="table-section">
       <!-- TABS -->
@@ -19,8 +12,9 @@
           @click="setActiveTab('pending')"
           :class="['tab-item', { 'tab-item--active': activeTab === 'pending' }]"
         >
-          Pending ({{ paginationData.pending.total_records }})
+          Pending
         </button>
+
         <button
           @click="setActiveTab('approved')"
           :class="[
@@ -28,8 +22,9 @@
             { 'tab-item--active': activeTab === 'approved' },
           ]"
         >
-          Approved ({{ paginationData.approved.total_records }})
+          Approved
         </button>
+
         <button
           @click="setActiveTab('rejected')"
           :class="[
@@ -37,26 +32,12 @@
             { 'tab-item--active': activeTab === 'rejected' },
           ]"
         >
-          Rejected ({{ paginationData.rejected.total_records }})
+          Rejected
         </button>
       </div>
 
       <!-- FILTER BAR -->
-      <div class="filter-bar">
-        <TextFieldInput
-          input-type="search"
-          input-placeholder="Search by Invoice #, Customer, or IRN"
-          class="search-input"
-          :has-bottom-padding="false"
-        />
-        <div class="filter-actions">
-          <SelectFieldInput
-            input-placeholder="Filter by Date"
-            class="date-filter"
-            :has-bottom-padding="false"
-          />
-        </div>
-      </div>
+      <FilterBar />
 
       <!-- TABLE CONTAINER -->
       <TableContainer
@@ -70,7 +51,6 @@
           :key="index"
           :table-header="currentTableHeader"
           :table-data="invoice"
-          class="!cursor-default"
         />
       </TableContainer>
 
@@ -82,22 +62,21 @@
         <Pagination
           :page-description="paginationDescription"
           :paging-data="currentPaginationData"
-          :page-keys="pageKeys"
         />
       </div>
     </div>
-  </div>
+  </PageLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from "vue";
 import { useString } from "@/shared/composables/useString";
 import dateUtil from "@/shared/composables/useDate";
+import PageLayout from "@/shared/components/global-comps/page-layout.vue";
 import TableContainer from "@/shared/components/table-comps/table-container.vue";
 import TableContainerBody from "@/shared/components/table-comps/table-container-body.vue";
+import FilterBar from "../components/filter-bar.vue";
 import Pagination from "@/shared/components/global-comps/pagination.vue";
-import TextFieldInput from "@/shared/components/form-comps/text-field-input.vue";
-import SelectFieldInput from "@/shared/components/form-comps/select-field-input.vue";
 
 // --- INTERFACES AND TYPES ---
 type InvoiceStatus = "Awaiting FIRS" | "Approved" | "Rejected";
@@ -148,38 +127,44 @@ const paginationData = ref({
     total_records: 0,
   },
 });
+
 const currentPaginationData = computed(
   () => paginationData.value[activeTab.value]
 );
+
 const paginationDescription = computed(() => {
   const data = currentPaginationData.value;
+
   if (!data.total_records) return "";
   const start = (data.current_page - 1) * data.page_count + 1;
   const end = Math.min(data.current_page * data.page_count, data.total_records);
   return `Showing ${start}-${end} of ${data.total_records} invoices`;
 });
-const pageKeys = ref({ green: "Approved", yellow: "Pending", red: "Rejected" });
 
 // --- TABLE CONFIGURATION ---
 const baseTableHeader = [
   { slug: "number", title: "Invoice #" },
-  { slug: "customerName", title: "Customer" },
-  { slug: "irn", title: "IRN" },
+  { slug: "customerName", title: "Customer Name" },
+  { slug: "irn", title: "IRN #" },
   { slug: "submissionDate", title: "Submission Date" },
   { slug: "status", title: "Status" },
 ];
+
 const currentTableHeader = computed(() => {
   if (activeTab.value === "rejected") {
-    // Insert the Rejection Reason column for the 'rejected' tab
     const headers = [...baseTableHeader];
+
     headers.splice(4, 0, {
       slug: "rejectionReason",
       title: "Rejection Reason",
     });
+
     return headers;
   }
+
   return baseTableHeader;
 });
+
 const emptyDataConfig = computed(() => ({
   title: `No ${activeTab.value} Invoices`,
   description: `Invoices with the status "${activeTab.value}" will appear here.`,
@@ -209,6 +194,7 @@ const invoicesForTable = computed(() => {
 const setActiveTab = (tab: "pending" | "approved" | "rejected") => {
   activeTab.value = tab;
 };
+
 watch(activeTab, (newTab) => {
   fetchInvoices(newTab);
 });
@@ -309,42 +295,19 @@ const formatDate = (isoString: string) => {
 </script>
 
 <style lang="scss" scoped>
-.invoice-tracker-page {
-  @apply pt-4;
-}
-.page-header {
-  @apply flex justify-between items-start mb-6;
-}
-.page-title {
-  @apply text-2xl font-semibold text-grey-900;
-}
-.page-description {
-  @apply text-grey-600 mt-1;
-}
 .table-section {
   @apply bg-neutral-10 p-6 sm:p-4 rounded-xl border border-grey-200/80;
 }
 
 .tabs-container {
   @apply flex items-center border-b border-b-grey-200 mb-6;
+
   .tab-item {
     @apply px-4 py-3 text-sm font-medium text-grey-500 border-b-2 border-transparent -mb-px transition-colors duration-200;
+
     &--active {
       @apply text-primary-900 border-b-primary-900;
     }
-  }
-}
-
-.filter-bar {
-  @apply flex justify-between items-center mb-6 pb-6 border-b border-b-grey-100;
-  .search-input {
-    @apply max-w-sm;
-  }
-  .filter-actions {
-    @apply flex items-center gap-x-2;
-  }
-  .date-filter {
-    @apply w-48;
   }
 }
 

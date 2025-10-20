@@ -3,24 +3,7 @@
     <div class="left">
       <div class="page-description">
         {{ pageDescription }}
-        <span class="font-medium">({{ pagingData?.page_count || 0 }})</span>
-      </div>
-
-      <div class="page-keys">
-        <div class="page-key-item" v-if="pageKeys.green">
-          <div class="status-key bg-green-400"></div>
-          <div class="status-text">{{ pageKeys.green }}</div>
-        </div>
-
-        <div class="page-key-item" v-if="pageKeys.yellow">
-          <div class="status-key bg-yellow-400"></div>
-          <div class="status-text">{{ pageKeys.yellow }}</div>
-        </div>
-
-        <div class="page-key-item" v-if="pageKeys.red">
-          <div class="status-key bg-red-400"></div>
-          <div class="status-text">{{ pageKeys.red }}</div>
-        </div>
+        <!-- <span class="font-medium">({{ pagingData?.page_count || 0 }})</span> -->
       </div>
     </div>
 
@@ -73,11 +56,6 @@ interface IPaging {
 interface IPaginationType {
   pageDescription: string;
   pagingData: IPaging;
-  pageKeys: {
-    green: string;
-    yellow: string;
-    red: string;
-  };
 }
 
 defineProps<IPaginationType>();
@@ -91,7 +69,7 @@ defineProps<IPaginationType>();
     @apply flex flex-col justify-start items-start gap-y-1.5;
 
     .page-description {
-      @apply text-grey-600/90 text-[15px];
+      @apply text-grey-600/90 text-[14px];
     }
 
     .page-keys {

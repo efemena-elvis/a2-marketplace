@@ -41,6 +41,45 @@ const dashboardRoutes: IRouteType[] = [
         },
       },
       {
+        path: "/invoice-compliance",
+        component: () =>
+          import(
+            /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/layouts/invoice-compliance-layout.vue"
+          ),
+        children: [
+          {
+            path: "valid",
+            name: "ValidInvoiceCompliance",
+            component: () =>
+              import("@/modules/dashboard/pages/invoice-compliance-valid.vue"),
+            meta: {
+              requiresAuth: true,
+              title: "Invoice Compliance",
+              pageMeta: {
+                title: "Invoice Compliance",
+                description: "CISL Invoice Compliance",
+              },
+            },
+          },
+          {
+            path: "invalid",
+            name: "InvalidInvoiceCompliance",
+            component: () =>
+              import(
+                "@/modules/dashboard/pages/invoice-compliance-invalid.vue"
+              ),
+            meta: {
+              requiresAuth: true,
+              title: "Invoice Compliance",
+              pageMeta: {
+                title: "Invoice Compliance",
+                description: "CISL Invoice Compliance",
+              },
+            },
+          },
+        ],
+      },
+      {
         path: "/invoice-tracker",
         name: "InvoiceTracker",
         component: () =>
@@ -56,22 +95,7 @@ const dashboardRoutes: IRouteType[] = [
           },
         },
       },
-      {
-        path: "/invoice-compliance",
-        name: "InvoiceCompliance",
-        component: () =>
-          import(
-            /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/pages/invoice-compliance.vue"
-          ),
-        meta: {
-          requiresAuth: true,
-          title: "Invoice Compliance",
-          pageMeta: {
-            title: "Invoice Compliance",
-            description: "CISL Invoice Compliance",
-          },
-        },
-      },
+
       {
         path: "/activity-logs",
         name: "ActivityLogs",
@@ -87,39 +111,6 @@ const dashboardRoutes: IRouteType[] = [
             description: "CISL Activity Logs",
           },
         },
-      },
-      {
-        path: "/settings",
-        component: () =>
-          import("@/modules/dashboard/layouts/settings-layout.vue"),
-        children: [
-          {
-            path: "profile",
-            name: "SettingsProfile",
-            component: () => import("@/modules/dashboard/pages/profile.vue"),
-          },
-          {
-            path: "contact-information",
-            name: "SettingsContact",
-            component: () =>
-              import("@/modules/dashboard/pages/contact-information.vue"),
-          },
-          {
-            path: "security",
-            name: "SettingsSecurity",
-            component: () => import("@/modules/dashboard/pages/security.vue"),
-          },
-          {
-            path: "api-keys",
-            name: "SettingsApiKeys",
-            component: () => import("@/modules/dashboard/pages/api-keys.vue"),
-          },
-          {
-            path: "providers",
-            name: "SettingsProviders",
-            component: () => import("@/modules/dashboard/pages/providers.vue"),
-          },
-        ],
       },
     ],
   },

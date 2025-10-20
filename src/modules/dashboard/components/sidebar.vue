@@ -80,11 +80,11 @@ const sidebarRouteList = ref<IRouteGroupType[]>(sidebarRoutes);
     @apply w-full px-6 py-3.5 text-grey-700 flex justify-start items-center gap-x-[12px] font-normal transition duration-300 ease-in-out hover:bg-primary-400/50;
 
     .icon {
-      @apply text-base;
+      @apply text-[18px];
     }
 
     .sidebar-text {
-      @apply text-[15px] font-medium;
+      @apply text-[14.5px] font-medium;
     }
 
     &--active {

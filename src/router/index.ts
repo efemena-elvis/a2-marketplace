@@ -5,11 +5,13 @@ import middlewares from "@/middlewares";
 import authRoutes from "@/modules/auth";
 import landingRoutes from "@/modules/landing";
 import dashboardRoutes from "@/modules/dashboard";
+import settingsRoutes from "@/modules/settings";
 
 const routes = [
   ...authRoutes,
   ...landingRoutes,
   ...dashboardRoutes,
+  ...settingsRoutes,
   {
     path: "/*",
     name: "NotFoundError",
@@ -45,5 +47,5 @@ const router = createRouter({
 // WRAPPING OUR APPLICATION ENTRY POINTS INSIDE OUR MIDDLEWARE
 // TO VERIFY A USER AUTHENTICATION STATE AND AUTHORIZATION
 // =============================================================
-// router.beforeEach(async (to, from, next) => middlewares(to, from, next));
+router.beforeEach(async (to, from, next) => middlewares(to, from, next));
 export default router;

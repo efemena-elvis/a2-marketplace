@@ -21,7 +21,7 @@
             connect a service provider.
           </p>
           <router-link
-            to="/app/settings/api-keys"
+            to="/settings/api-keys"
             class="btn btn-primary btn-md mt-4"
           >
             Go to API Keys
@@ -52,10 +52,12 @@
               <button
                 v-if="!zohoConnection.isConnected"
                 class="btn btn-primary btn-sm"
-                @click="openConnectModal"
+                @click="handleConnectZoho"
               >
                 Connect
               </button>
+              <!-- @click="openConnectModal" -->
+
               <button
                 v-else
                 class="btn btn-alert btn-sm"
@@ -74,7 +76,7 @@
     <ModalDialog
       v-if="showConnectModal"
       @close-modal="showConnectModal = false"
-      size="modal-md"
+      size="modal-xs"
     >
       <template #modal-cover-header>
         <div class="modal-cover-header">
@@ -85,27 +87,18 @@
           </p>
         </div>
       </template>
+
       <template #modal-cover-body>
         <div class="modal-cover-body">
           <form @submit.prevent="handleConnectZoho">
             <TextFieldInput
               label-title="Organization ID"
               v-model:input-value="zohoCredentials.orgId"
-              class="mb-6"
-            />
-            <TextFieldInput
-              label-title="Client ID"
-              v-model:input-value="zohoCredentials.clientId"
-              class="mb-6"
-            />
-            <TextFieldInput
-              label-title="Client Secret"
-              input-type="password"
-              v-model:input-value="zohoCredentials.clientSecret"
             />
           </form>
         </div>
       </template>
+
       <template #modal-cover-footer>
         <div class="modal-cover-footer flex justify-end gap-x-3">
           <button
@@ -114,6 +107,7 @@
           >
             Cancel
           </button>
+
           <button
             class="btn btn-primary btn-md"
             @click="handleConnectZoho"
@@ -173,6 +167,7 @@
 import { ref, onMounted } from "vue";
 import ModalDialog from "@/shared/components/global-comps/modal-dialog.vue";
 import TextFieldInput from "@/shared/components/form-comps/text-field-input.vue";
+import constants from "@/utilities/constants";
 
 // --- REACTIVE STATE ---
 const hasApiKey = ref(false); // This will determine if the "Connect" button is enabled
@@ -186,8 +181,6 @@ const zohoConnection = ref({
 
 const zohoCredentials = ref({
   orgId: "",
-  clientId: "",
-  clientSecret: "",
 });
 
 // --- API LOGIC (MOCKED) ---
@@ -216,18 +209,20 @@ const fetchProviderStatus = async () => {
 };
 
 const openConnectModal = () => {
-  zohoCredentials.value = { orgId: "", clientId: "", clientSecret: "" };
+  zohoCredentials.value = { orgId: "" };
   showConnectModal.value = true;
 };
 
 const handleConnectZoho = async () => {
   isConnecting.value = true;
+
   try {
-    // In a real app: await apiFetch('/app/settings/providers/zoho', { method: 'POST', data: zohoCredentials.value });
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    zohoConnection.value.isConnected = true;
-    showConnectModal.value = false;
-    alert("Successfully connected to Zoho Books!");
+    const { ZOHO_CLIENT_ID, ZOHO_SCOPES, ZOHO_REDIRECT_URI_PATH } = constants;
+
+    const authUrl = `https://accounts.zoho.com/oauth/v2/auth?scope=${ZOHO_SCOPES}&client_id=${ZOHO_CLIENT_ID}&state=testing&response_type=code&redirect_uri=${ZOHO_REDIRECT_URI_PATH}&access_type=offline`;
+
+    // Redirect the user's browser to the Zoho authentication page
+    window.location.href = authUrl;
   } catch (error) {
     console.error("Failed to connect Zoho:", error);
     alert("An error occurred. Please check your credentials and try again.");
@@ -242,6 +237,8 @@ const openDisconnectModal = () => {
 
 const handleDisconnectZoho = async () => {
   isConnecting.value = true;
+  const { ZOHO_CLIENT_ID, ZOHO_SCOPES, ZOHO_REDIRECT_URI_PATH } = constants;
+
   try {
     // In a real app: await apiFetch('/app/settings/providers/zoho', { method: 'DELETE' });
     await new Promise((resolve) => setTimeout(resolve, 1500));

@@ -79,15 +79,17 @@ export default function useEvents() {
       // Reset button state after action
       btnRef && clickHandler(btnRef, btnText, false);
 
+      const responseCode = response?.code || response?.status;
+
       // Handle different response codes
-      switch (response?.code || response?.status) {
+      switch (responseCode) {
         case 200:
         case 201:
           if (
             hasAlertHandler &&
-            isValidAlertHandler(alertHandler, response.code)
+            isValidAlertHandler(alertHandler, responseCode)
           ) {
-            showAlert && pushToastAlert(alertHandler[response.code]);
+            showAlert && pushToastAlert(alertHandler[responseCode]);
           }
           break;
         case 400:
@@ -112,7 +114,7 @@ export default function useEvents() {
           }
           break;
         default:
-          if (response.code >= 500) {
+          if (responseCode >= 500) {
             // Handle server errors (500 or greater)
             if (
               hasAlertHandler &&

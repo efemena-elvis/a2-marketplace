@@ -17,7 +17,7 @@ export const sidebarRoutes: IRouteGroupType[] = [
   },
   {
     slug: "invoice-compliance",
-    link: "/invoice-compliance",
+    link: "/invoice-compliance/valid",
     title: "Invoice Compliance",
     icon: "icon-shield-tick",
     active: false,

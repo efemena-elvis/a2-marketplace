@@ -40,6 +40,10 @@ button {
   }
 }
 
+.btn-xs {
+  @apply py-1 px-4 text-[13.5px] h-[36px];
+}
+
 .btn-sm {
   @apply py-1.5 px-5 text-[14px] h-[42px];
 }

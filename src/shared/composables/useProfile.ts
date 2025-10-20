@@ -7,16 +7,10 @@ const { getAuthToken, getAuthUser } = useAuthStore();
 interface IUserProfile {
   id: string;
   email: string;
-  country: {
-    country_code: string;
-    currency_code: string;
-    name: string;
-    id: string;
-  };
-  firstName: string;
-  lastName: string;
-  currentBusiness: string;
-  isEmailVerified: boolean;
+  fullName: string;
+  companyId: string;
+  companyName: string;
+  companyRCNumber: string;
 }
 
 interface IAPIKeys {

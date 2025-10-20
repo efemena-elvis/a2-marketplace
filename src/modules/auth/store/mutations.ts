@@ -18,12 +18,12 @@ export function useAuthMutations() {
 
   // MUTATE AUTH TOKEN
   const mutateAuthToken = (payload: any) => {
-    authToken.value = payload.auth_token;
-    axios.defaults.headers.common["Authorization"] = payload.auth_token;
+    authToken.value = payload.token;
+    axios.defaults.headers.common["Authorization"] = payload.token;
 
     setStorage({
       storage_name: APP_AUTH_TOKEN,
-      storage_value: payload.auth_token,
+      storage_value: payload.token,
     });
 
     setStorage({
@@ -34,16 +34,15 @@ export function useAuthMutations() {
 
   // MUTATE AUTH USER
   const mutateAuthUser = (payload: any) => {
-    const { user } = payload;
+    const { user, company } = payload;
 
     authUser.value = {
       id: user.id,
       email: user.email,
-      country: user.country,
-      firstName: user.first_name,
-      lastName: user.last_name,
-      currentBusiness: user.current_business,
-      isEmailVerified: payload.is_email_verified,
+      fullName: user.name,
+      companyId: company.id,
+      companyName: company.name,
+      companyRCNumber: company.rc_number,
     };
 
     setStorage({

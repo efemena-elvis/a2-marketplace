@@ -15,7 +15,7 @@
       <template v-if="!isTextArea">
         <!-- PREFIX ITEM FOR SEARCH FIELD TYPE -->
         <div v-if="inputType === 'search'" class="prefix-item">
-          <!-- <SearchIcon class="prefix-icon" fillColor="#818988" /> -->
+          <div class="icon icon-search-normal"></div>
         </div>
 
         <!-- inputBaseColor, -->
@@ -110,7 +110,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { useValidator } from "@/shared/composables/useValidators";
-// import SearchIcon from "@/shared/components/icon-comps/search-icon.vue";
 import {
   ITextInputField,
   IInputType,

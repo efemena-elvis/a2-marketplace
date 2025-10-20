@@ -91,38 +91,31 @@ const isLoginReady = computed(() => {
 
 const getLoginPayload = computed(() => {
   const { email, password } = loginPayload.value;
-  return { email, password };
+  return { email_address: email, password };
 });
 
 const handleUserLogin = async () => {
-  // const response = await processAPIRequest({
-  //   action: loginUser,
-  //   payload: getLoginPayload.value,
-  //   btnRef: loginBtnRef,
-  //   btnText: "Login to your dashboard",
-  //   alertHandler: {
-  //     200: {
-  //       message: "Merchant login successful",
-  //       description: "You are being redirected to your merchant dashboard",
-  //       type: "success",
-  //     },
-  //     400: {
-  //       message: "Merchant login failed",
-  //       description: "Incorrect email address or password combination",
-  //       type: "error",
-  //     },
-  //   },
-  // });
-  // if (response.code === 200) {
-  //   // Check if user email is verified
-  //   const { is_email_verified, activate_my_business } = response.data;
-  //   setTimeout(() => {
-  //     location.href = is_email_verified
-  //       ? activate_my_business
-  //         ? "/transfers/balance"
-  //         : "/compliance/documents"
-  //       : `/verify-account?email=${encodeURIComponent(getLoginPayload.value.email)}`;
-  //   }, 1200);
-  // }
+  const response = await processAPIRequest({
+    action: loginUser,
+    payload: getLoginPayload.value,
+    btnRef: loginBtnRef,
+    btnText: "Login to your dashboard",
+    alertHandler: {
+      200: {
+        message: "Account login successful",
+        description: "You are being redirected to your dashboard",
+        type: "success",
+      },
+      400: {
+        message: "Account login failed",
+        description: "Incorrect email address or password combination",
+        type: "error",
+      },
+    },
+  });
+
+  if (response.status === 200) {
+    location.href = "/dashboard";
+  }
 };
 </script>

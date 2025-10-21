@@ -170,7 +170,7 @@ import TextFieldInput from "@/shared/components/form-comps/text-field-input.vue"
 import constants from "@/utilities/constants";
 
 // --- REACTIVE STATE ---
-const hasApiKey = ref(false); // This will determine if the "Connect" button is enabled
+const hasApiKey = ref(true); // This will determine if the "Connect" button is enabled
 const isConnecting = ref(false);
 const showConnectModal = ref(false);
 const showDisconnectModal = ref(false);
@@ -190,6 +190,7 @@ const checkApiKeyStatus = async () => {
     // In a real app: const data = await apiFetch('/app/settings/api-keys');
     // hasApiKey.value = data.keys.length > 0;
     // For demo, we'll assume a key exists after a short delay
+
     await new Promise((resolve) => setTimeout(resolve, 500));
     hasApiKey.value = true;
   } catch (error) {
@@ -219,7 +220,7 @@ const handleConnectZoho = async () => {
   try {
     const { ZOHO_CLIENT_ID, ZOHO_SCOPES, ZOHO_REDIRECT_URI_PATH } = constants;
 
-    const authUrl = `https://accounts.zoho.com/oauth/v2/auth?scope=${ZOHO_SCOPES}&client_id=${ZOHO_CLIENT_ID}&state=testing&response_type=code&redirect_uri=${ZOHO_REDIRECT_URI_PATH}&access_type=offline`;
+    const authUrl = `https://accounts.zoho.com/oauth/v2/auth?scope=${ZOHO_SCOPES}&client_id=${ZOHO_CLIENT_ID}&response_type=code&redirect_uri=${ZOHO_REDIRECT_URI_PATH}&access_type=offline`;
 
     // Redirect the user's browser to the Zoho authentication page
     window.location.href = authUrl;
@@ -254,7 +255,7 @@ const handleDisconnectZoho = async () => {
 };
 
 onMounted(() => {
-  checkApiKeyStatus();
+  // checkApiKeyStatus();
   fetchProviderStatus();
 });
 </script>

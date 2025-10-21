@@ -37,15 +37,15 @@ const handlerProviderAuth = async () => {
     action: providerConnect,
     payload: {
       code: route.query.code,
-      state: route.query?.state ?? "testing",
+      // state: route.query?.state ?? "testing",
       company_id: companyId,
     },
     showAlert: false,
   });
 
-  if (response.status === 200) {
-    setTimeout(() => (location.href = "/dashboard"), 1000);
-  }
+  // if (response.status === 200) {
+  //   setTimeout(() => (location.href = "/dashboard"), 1000);
+  // }
 };
 
 onMounted(() => {

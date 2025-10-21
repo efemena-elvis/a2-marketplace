@@ -47,9 +47,9 @@ export function useAuthActions() {
     });
   };
 
-  const providerConnect = async ({ code, state, company_id }: any) => {
+  const providerConnect = async ({ code, company_id }: any) => {
     return await $api.fetch(authRoutes.providerConnect, {
-      params: { code, state, company_id },
+      params: { code, company_id },
       headers: { "x-api-key": localStorage.getItem("API_KEY") as string },
       resolve: false,
     });

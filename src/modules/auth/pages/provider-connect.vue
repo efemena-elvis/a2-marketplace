@@ -21,10 +21,12 @@ import PageLoader from "@/shared/components/global-comps/page-loader.vue";
 import { useAuthStore } from "@/modules/auth/store";
 import useEvents from "@/shared/composables/useEvents";
 import { useProfile } from "@/shared/composables/useProfile";
+import { useStorage } from "@/shared/composables/useStorage";
 
 const route = useRoute();
 const { providerConnect } = useAuthStore();
 const { processAPIRequest } = useEvents();
+const { setStorage } = useStorage();
 
 const { getUser } = useProfile();
 const { companyId } = getUser();
@@ -43,9 +45,14 @@ const handlerProviderAuth = async () => {
     showAlert: false,
   });
 
-  // if (response.status === 200) {
-  //   setTimeout(() => (location.href = "/dashboard"), 1000);
-  // }
+  if (response.status === 200) {
+    setStorage({
+      storage_name: "ZOHO_API_KEY",
+      storage_value: response.data.data.access_token,
+    });
+
+    setTimeout(() => (location.href = "/dashboard"), 1000);
+  }
 };
 
 onMounted(() => {

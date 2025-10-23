@@ -1,23 +1,29 @@
-import $api from "@/shared/composables/useServiceAPI";
-// import { dashboardRoutes } from "./dashboard-routes";
+import useServiceAPI from "@/shared/composables/useServiceAPI";
+import { dashboardRoutes } from "./dashboard-routes";
+import constants from "@/utilities/constants";
 
-// export const getAuditLogs = async () => {
-//   return await $api.fetch(settingsRoutes.auditLogs, {
-//     resolve: true,
-//     requiresPublicKey: true,
-//   });
-// };
+export function useDashboardActions() {
+  const { API_BASE_URL, APP_AUTH_TOKEN } = constants;
 
-// export const fetchUserProfile = async () => {
-//   const response = await $api.fetch(settingsRoutes.userProfile);
-//   mutateProfile(response);
-//   return response;
-// };
+  const $api = new useServiceAPI({
+    API_BASE_URL: API_BASE_URL,
+    TOKEN_KEY: APP_AUTH_TOKEN,
+  });
 
-// export const updateUserProfile = async (payload: any) => {
-//   return await $api.push(settingsRoutes.userProfile, { payload });
-// };
+  const fetchBusinessInvoices = async () => {
+    return await $api.push(
+      dashboardRoutes.getInvoices,
+      {},
+      {
+        headers: {
+          zoho_authorization: localStorage.getItem("ZOHO_API_KEY") as string,
+        },
+        resolve: false,
+      }
+    );
+  };
 
-// export const updateUserPassword = async (payload: any) => {
-//   return await $api.push(settingsRoutes.userPassword, { payload });
-// };
+  return {
+    fetchBusinessInvoices,
+  };
+}

@@ -65,7 +65,9 @@
 import { ref, onMounted, computed, h, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useString } from "@/shared/composables/useString";
+import useEvents from "@/shared/composables/useEvents";
 import dateUtil from "@/shared/composables/useDate";
+import { useDashboardStore } from "@/modules/dashboard/store";
 // Import all components
 import PageLayout from "@/shared/components/global-comps/page-layout.vue";
 import TableContainer from "@/shared/components/table-comps/table-container.vue";
@@ -96,6 +98,10 @@ interface IPaging {
 
 // --- COMPOSABLES ---
 const route = useRoute();
+
+const { fetchBusinessInvoices } = useDashboardStore();
+const { processAPIRequest } = useEvents();
+
 const { getBoldTableText, maskCode, formatNumber } = useString();
 
 // --- REACTIVE STATE ---
@@ -136,9 +142,16 @@ const fetchInvoices = async () => {
     console.log(
       `Fetching invoices with search: ${search}, filter: ${filter}, page: ${page}`
     );
-    // Replace with real apiFetch call:
-    // const data = await apiFetch(`/invoices?status=pending_irn&search=${search}&filter=${filter}&page=${page}`);
+
     await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const response = await processAPIRequest({
+      action: fetchBusinessInvoices,
+      payload: {},
+    });
+
+    console.log("INVOICES", response);
+
     const mockApiResponse = {
       invoices: [
         {

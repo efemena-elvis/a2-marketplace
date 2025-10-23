@@ -1,5 +1,6 @@
+const version: string = "v1";
+const invoiceNameSpace: string = `invoices/${version}`;
+
 export const dashboardRoutes = {
-  auditLogs: `auditlogs`,
-  userProfile: "profile",
-  userPassword: "auth/update-password",
+  getInvoices: `${invoiceNameSpace}/imports/zoho/invoices`,
 };

@@ -1,10 +1,14 @@
 // index.ts
 import { defineStore } from "pinia";
-// import * as state from "./state";
-// import * as getters from "./getters";
-import * as actions from "./actions";
+// import { useDashboardState } from "./state";
+// import { useDashboardGetters } from "./getters";
+import { useDashboardActions } from "./actions";
 
-export const useSettingsStore = defineStore("settings", () => {
+export const useDashboardStore = defineStore("dashboard", () => {
+  // const state = useDashboardState();
+  // const getters = useDashboardGetters();
+  const actions = useDashboardActions();
+
   return {
     // ...state,
     // ...getters,

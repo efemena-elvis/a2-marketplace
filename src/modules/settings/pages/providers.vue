@@ -204,6 +204,12 @@ const fetchProviderStatus = async () => {
   try {
     // In a real app: const data = await apiFetch('/app/settings/providers');
     // zohoConnection.value.isConnected = data.zoho.isConnected;
+
+    const zohoApiKey = localStorage.getItem("ZOHO_API_KEY");
+
+    if (zohoApiKey) {
+      zohoConnection.value.isConnected = true;
+    }
   } catch (error) {
     console.error("Failed to fetch provider status:", error);
   }
@@ -238,11 +244,13 @@ const openDisconnectModal = () => {
 
 const handleDisconnectZoho = async () => {
   isConnecting.value = true;
-  const { ZOHO_CLIENT_ID, ZOHO_SCOPES, ZOHO_REDIRECT_URI_PATH } = constants;
 
   try {
     // In a real app: await apiFetch('/app/settings/providers/zoho', { method: 'DELETE' });
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    localStorage.removeItem("ZOHO_API_KEY");
+
     zohoConnection.value.isConnected = false;
     showDisconnectModal.value = false;
     alert("Successfully disconnected from Zoho Books.");

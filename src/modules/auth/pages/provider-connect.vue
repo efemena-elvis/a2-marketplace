@@ -51,7 +51,7 @@ const handlerProviderAuth = async () => {
       storage_value: response.data.data.access_token,
     });
 
-    setTimeout(() => (location.href = "/dashboard"), 1000);
+    setTimeout(() => (location.href = "/dashboard"), 100);
   }
 };
 

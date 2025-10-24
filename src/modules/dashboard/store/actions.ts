@@ -21,16 +21,12 @@ export function useDashboardActions() {
 
     const getZohoToken = getZohoServiceProvider?.access_token || null;
 
-    return await $api.push(
-      dashboardRoutes.getInvoices,
-      {},
-      {
-        headers: {
-          zoho_authorization: getZohoToken,
-        },
-        resolve: false,
-      }
-    );
+    return await $api.fetch(dashboardRoutes.getInvoices, {
+      headers: {
+        zoho_authorization: getZohoToken,
+      },
+      resolve: false,
+    });
   };
 
   return {

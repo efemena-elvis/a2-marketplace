@@ -58,9 +58,9 @@ export function useDashboardActions() {
     invoiceId: string;
   }) => {
     const response = await $api.push(
-      dashboardRoutes.transformInvoice,
+      `${dashboardRoutes.transformInvoice}/${invoiceId}`,
       {},
-      { params: { invoice_id: invoiceId }, resolve: false }
+      { resolve: false }
     );
 
     if (response.status === 200) {

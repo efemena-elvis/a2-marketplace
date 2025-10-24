@@ -203,17 +203,12 @@ const submitToFirs = async (invoice: Invoice) => {
       payload: { invoice },
     });
 
-    pushToastAlert({
-      type: "success",
-      message: `Invoice submitted successfully!`,
-    });
-
-    // if (response.status === 200) {
-    //   pushToastAlert({
-    //     type: "success",
-    //     message: `Invoice submitted successfully!`,
-    //   });
-    // }
+    if (response.status === 200) {
+      pushToastAlert({
+        type: "success",
+        message: `Invoice submitted successfully!`,
+      });
+    }
   } catch (error) {
     console.error("Failed to submit to FIRS:", error);
   } finally {

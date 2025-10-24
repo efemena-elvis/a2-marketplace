@@ -182,17 +182,12 @@ const transformInvoice = async (invoiceId: string) => {
       payload: { invoiceId },
     });
 
-    pushToastAlert({
-      type: "success",
-      message: `Invoice transformed successfully!`,
-    });
-
-    // if (response.status === 200) {
-    //   pushToastAlert({
-    //     type: "success",
-    //     message: `Invoice transformed successfully!`,
-    //   });
-    // }
+    if (response.status === 200) {
+      pushToastAlert({
+        type: "success",
+        message: `Invoice transformed successfully!`,
+      });
+    }
   } catch (error) {
     console.error("Failed to generate IRN:", error);
   } finally {

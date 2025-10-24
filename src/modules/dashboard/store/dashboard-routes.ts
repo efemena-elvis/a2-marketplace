@@ -3,6 +3,6 @@ const invoiceNameSpace: string = `invoices/${version}`;
 
 export const dashboardRoutes = {
   getInvoices: `${invoiceNameSpace}/imports/zoho/invoices`,
-  transformInvoice: `${invoiceNameSpace}/imports/zoho/invoices/:invoice_id`,
+  transformInvoice: `${invoiceNameSpace}/imports/zoho/invoices`,
   submitInvoice: `${invoiceNameSpace}/sign`,
 };

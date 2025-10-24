@@ -28,6 +28,7 @@ export function useAuthActions() {
           ...data.user,
           company_name: "BlackRock Limited",
         },
+        service_providers: [...data.service_providers],
       };
 
       mutateUserData(normalizedPayload);

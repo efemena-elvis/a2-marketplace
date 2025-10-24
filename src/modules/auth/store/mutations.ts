@@ -6,14 +6,15 @@ import constants from "@/utilities/constants";
 
 const { setStorage } = useStorage();
 const { encodeString, getRandomString } = useString();
-const { APP_AUTH_TOKEN, APP_AUTH_USER } = constants;
+const { APP_AUTH_TOKEN, APP_AUTH_USER, ZOHO_SERVICE_PROVIDER } = constants;
 
 export function useAuthMutations() {
-  const { authToken, authUser } = useAuthState();
+  const { authToken, authUser, zohoServiceProvider } = useAuthState();
 
   const mutateUserData = (responsePayload: any) => {
     mutateAuthToken(responsePayload);
     mutateAuthUser(responsePayload);
+    mutateServiceProvider(responsePayload);
   };
 
   // MUTATE AUTH TOKEN
@@ -48,6 +49,21 @@ export function useAuthMutations() {
     setStorage({
       storage_name: APP_AUTH_USER,
       storage_value: authUser.value,
+      storage_type: "object",
+    });
+  };
+
+  // MUTATE SERVICE PROVIDER
+  const mutateServiceProvider = (payload: any) => {
+    const { service_providers } = payload;
+
+    zohoServiceProvider.value = service_providers.find(
+      (item: any) => item.provider_name === "Zoho"
+    );
+
+    setStorage({
+      storage_name: ZOHO_SERVICE_PROVIDER,
+      storage_value: zohoServiceProvider.value,
       storage_type: "object",
     });
   };

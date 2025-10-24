@@ -43,7 +43,7 @@ export function useDashboardActions() {
     }
 
     // TEMP
-    mutateImportedInvoices(imported_invoices);
+    // mutateImportedInvoices(imported_invoices);
 
     return {
       data: {
@@ -57,10 +57,23 @@ export function useDashboardActions() {
   }: {
     invoiceId: string;
   }) => {
+    const getZohoServiceProvider: any =
+      getStorage({
+        storage_name: ZOHO_SERVICE_PROVIDER,
+        storage_type: "object",
+      }) || {};
+
+    const getZohoToken = getZohoServiceProvider?.access_token || null;
+
     const response = await $api.push(
       `${dashboardRoutes.transformInvoice}/${invoiceId}`,
       {},
-      { resolve: false }
+      {
+        headers: {
+          zoho_authorization: getZohoToken,
+        },
+        resolve: false,
+      }
     );
 
     if (response.status === 200) {
@@ -69,7 +82,7 @@ export function useDashboardActions() {
     }
 
     // TEMP
-    mutateTransformedInvoices(response.data || {}, invoiceId);
+    // mutateTransformedInvoices(response.data || {}, invoiceId);
 
     return response;
   };
@@ -91,7 +104,7 @@ export function useDashboardActions() {
     }
 
     // TEMP
-    mutateSubmittedInvoices(invoice.invoice_id);
+    // mutateSubmittedInvoices(invoice.invoice_id);
 
     return response;
   };

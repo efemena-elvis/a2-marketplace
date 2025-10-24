@@ -9,9 +9,9 @@ export const sidebarRoutes: IRouteGroupType[] = [
     active: true,
   },
   {
-    slug: "invoice-irn",
-    link: "/invoice-irn",
-    title: "Invoice (IRNs)",
+    slug: "invoice-imports",
+    link: "/invoice-imports",
+    title: "Invoice Imports",
     icon: "icon-directbox-notif",
     active: false,
   },

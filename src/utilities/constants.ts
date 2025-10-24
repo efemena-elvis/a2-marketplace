@@ -18,6 +18,9 @@ export interface IConstants {
   ZOHO_SERVICE_PROVIDER: string;
   LOCAL_DOMAIN: string;
   IS_LOCAL_HOST: boolean;
+  IMPORTED_INVOICES: string;
+  TRANSFORMED_INVOICES: string;
+  SUBMITTED_INVOICES: string;
 }
 
 const constants: IConstants = {
@@ -31,6 +34,9 @@ const constants: IConstants = {
   ZOHO_SERVICE_PROVIDER: "ZOHO_SERVICE_PROVIDER",
   LOCAL_DOMAIN: LOCAL_DOMAIN,
   IS_LOCAL_HOST: IS_LOCAL_HOST,
+  IMPORTED_INVOICES: "IMPORTED_INVOICES",
+  TRANSFORMED_INVOICES: "TRANSFORMED_INVOICES",
+  SUBMITTED_INVOICES: "SUBMITTED_INVOICES",
 };
 
 export default constants;

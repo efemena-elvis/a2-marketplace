@@ -1,7 +1,7 @@
 <template>
   <PageLayout
-    title="Invoice IRNs"
-    description="All synchronized invoices with a generated IRN will appear here."
+    title="Invoice Imports"
+    description="All synchronized invoices will appear here."
     :show-action-btn="true"
     action-text="Manual Sync"
     :is-action-loading="isSyncing"
@@ -17,13 +17,10 @@
         v-if="selectedInvoices.length"
         :selection-count="selectedInvoices.length"
         :show-primary-action="true"
-        :show-secondary-action="true"
-        :is-primary-loading="isGeneratingIRN"
-        :is-secondary-loading="false"
-        primary-action-text="Generate IRN"
-        secondary-action-text="Validate IRN"
+        :show-secondary-action="false"
+        :is-primary-loading="isTransformingInvoice"
+        primary-action-text="Transform Selected Invoice(s)"
         @primary-action-clicked="handleBulkGenerateIRN"
-        @secondary-action-clicked="handleBulkValidateIRN"
       />
 
       <!-- TABLE CONTAINER -->
@@ -68,6 +65,7 @@ import { useString } from "@/shared/composables/useString";
 import useEvents from "@/shared/composables/useEvents";
 import dateUtil from "@/shared/composables/useDate";
 import { useDashboardStore } from "@/modules/dashboard/store";
+import { ImportedInvoice } from "@/models/invoice-type";
 // Import all components
 import PageLayout from "@/shared/components/global-comps/page-layout.vue";
 import TableContainer from "@/shared/components/table-comps/table-container.vue";
@@ -78,17 +76,6 @@ import FilterBar from "../components/filter-bar.vue";
 import ContextualActionBar from "../components/contextual-action-bar.vue";
 
 // --- INTERFACES AND TYPES ---
-interface Invoice {
-  id: string;
-  number: string;
-  customerName: string;
-  date: string;
-  amount: number;
-  irn: string;
-  currency_code: string;
-  status: "Pending IRN";
-}
-
 interface IPaging {
   current_page: number;
   page_count: number;
@@ -100,15 +87,15 @@ interface IPaging {
 const route = useRoute();
 
 const { fetchBusinessInvoices } = useDashboardStore();
-const { processAPIRequest } = useEvents();
+const { processAPIRequest, pushToastAlert } = useEvents();
 
-const { getBoldTableText, maskCode, formatNumber } = useString();
+const { getBoldTableText, getStatus, formatNumber } = useString();
 
 // --- REACTIVE STATE ---
 const isSyncing = ref(false);
 const isFetchingInvoices = ref(true);
-const isGeneratingIRN = ref(false);
-const rawInvoices = ref<Invoice[]>([]);
+const isTransformingInvoice = ref(false);
+const rawInvoices = ref<ImportedInvoice[]>([]);
 const selectedInvoices = ref<string[]>([]);
 
 const paginationData = ref<IPaging>({
@@ -139,51 +126,24 @@ const fetchInvoices = async () => {
   try {
     const { search, filter, page } = route.query;
 
-    console.log(
-      `Fetching invoices with search: ${search}, filter: ${filter}, page: ${page}`
-    );
-
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
     const response = await processAPIRequest({
       action: fetchBusinessInvoices,
       payload: {},
     });
 
-    console.log("INVOICES", response);
+    console.log("INVOICES", response.data.imported);
 
     const mockApiResponse = {
-      invoices: [
-        {
-          id: "1",
-          number: "INV-0156",
-          customerName: "Tech Solutions Ltd",
-          date: "2025-10-07",
-          amount: 150000,
-          irn: "INV233okj009183hh13442",
-          currency_code: "NGN",
-          status: "Pending IRN",
-        },
-        {
-          id: "2",
-          number: "INV-0155",
-          customerName: "Global Exports",
-          date: "2025-10-07",
-          amount: 275000,
-          irn: "",
-          currency_code: "NGN",
-          status: "Pending IRN",
-        },
-      ],
+      invoices: response.data.imported,
       pagination: {
         current_page: Number(page) || 1,
         page_count: 10,
-        total_pages_count: 5,
-        total_records: 48,
+        total_pages_count: 1,
+        total_records: 10,
       },
     };
 
-    rawInvoices.value = mockApiResponse.invoices as Invoice[];
+    rawInvoices.value = mockApiResponse.invoices as ImportedInvoice[];
     paginationData.value = mockApiResponse.pagination;
   } catch (error) {
     console.error("Failed to fetch invoices:", error);
@@ -202,40 +162,31 @@ const handleManualSync = async () => {
   isSyncing.value = false;
 };
 
-const handleSingleGenerateIRN = async (invoiceId: string) => {
-  console.log("Generate IRN clicked for invoice:", invoiceId);
-  // await generateIRN([invoiceId]);
+const handleSingleInvoiceTransform = async (invoiceId: string) => {
+  await transformInvoice(invoiceId);
 };
 
-const handleSingleValidateIRN = async (invoiceId: string) => {
-  console.log("Validate IRN clicked for invoice:", invoiceId);
-  // await generateIRN([invoiceId]);
-};
+const handleBulkGenerateIRN = async () => {};
 
-const handleBulkGenerateIRN = async () => {
-  await generateIRN(selectedInvoices.value);
-};
+const transformInvoice = async (invoiceId: string) => {
+  isTransformingInvoice.value = true;
 
-const handleBulkValidateIRN = async () => {
-  await generateIRN(selectedInvoices.value);
-};
-
-const generateIRN = async (invoiceIds: string[]) => {
-  isGeneratingIRN.value = true;
   try {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    rawInvoices.value = rawInvoices.value.filter(
-      (inv) => !invoiceIds.includes(inv.id)
-    );
-    paginationData.value.total_records -= invoiceIds.length;
-    selectedInvoices.value = [];
-    alert(
-      `Successfully started IRN generation for ${invoiceIds.length} invoice(s).`
-    );
+    const response = await processAPIRequest({
+      action: fetchBusinessInvoices,
+      payload: { invoiceId },
+    });
+
+    if (response.status === 200) {
+      pushToastAlert({
+        type: "success",
+        message: `Invoice transformed successfully!`,
+      });
+    }
   } catch (error) {
     console.error("Failed to generate IRN:", error);
   } finally {
-    isGeneratingIRN.value = false;
+    isTransformingInvoice.value = false;
   }
 };
 
@@ -249,7 +200,9 @@ const toggleSelection = (invoiceId: string) => {
 };
 
 const toggleSelectAll = (event: boolean): void => {
-  selectedInvoices.value = event ? rawInvoices.value.map((inv) => inv.id) : [];
+  selectedInvoices.value = event
+    ? rawInvoices.value.map((inv) => inv.invoice_id)
+    : [];
 };
 
 onMounted(() => {
@@ -262,7 +215,7 @@ const tableHeader = ref([
   { slug: "number", title: "Invoice #" },
   { slug: "customerName", title: "Customer Name" },
   { slug: "amount", title: "Amount" },
-  { slug: "irn", title: "IRN #" },
+  { slug: "status", title: "Status" },
   { slug: "action", title: "Actions" },
 ]);
 
@@ -275,24 +228,25 @@ const emptyDataConfig = {
 
 const invoicesForTable = computed(() => {
   return rawInvoices.value.map((invoice) => ({
-    id: invoice.id,
+    id: invoice.invoice_id,
     date: getInvoiceDate(invoice.date),
-    number: getBoldTableText(invoice.number),
-    customerName: invoice.customerName,
+    number: getBoldTableText(invoice.invoice_number),
+    customerName: invoice.customer_name,
     amount: getBoldTableText(
-      `${invoice.currency_code} ${formatNumber(invoice.amount)}`
+      `${invoice.currency_code} ${formatNumber(invoice.total)}`
     ),
-    irn: invoice.irn ? maskCode(invoice.irn) : "-------",
+    status: getStatus("pending", "Pending"),
     action: h(TableActionBtn, {
       showPrimaryBtn: true,
-      showSecondaryBtn: true,
+      showSecondaryBtn: false,
       showSecondaryText: true,
-      primaryBtnText: "Generate IRN",
-      secondaryBtnText: "Validate IRN",
+      primaryBtnText: "Transform Invoice",
+      secondaryBtnText: "View QRCode",
       secondaryBtnIcon: "",
       isSecondaryActionDelete: false,
-      onPrimaryActionClicked: () => handleSingleGenerateIRN(invoice.id),
-      onSecondaryActionClicked: () => handleSingleValidateIRN(invoice.id),
+      onPrimaryActionClicked: () =>
+        handleSingleInvoiceTransform(invoice.invoice_id),
+      onSecondaryActionClicked: () => {},
     }),
   }));
 });

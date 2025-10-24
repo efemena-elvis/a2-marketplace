@@ -66,7 +66,7 @@ defineProps({
   @apply flex justify-start items-center gap-x-3;
 
   .table-action-btn {
-    @apply max-w-[120px] cursor-pointer h-[38px] py-2 px-4 font-medium rounded-lg border border-primary-800/80 text-grey-900 text-[13.25px] transition duration-300 ease-in-out text-nowrap hover:bg-primary-900 hover:text-white;
+    @apply min-w-[80px] w-auto cursor-pointer h-[38px] py-2 px-4 font-medium rounded-lg border border-primary-800/80 text-grey-900 text-[13.25px] transition duration-300 ease-in-out text-nowrap hover:bg-primary-900 hover:text-white;
   }
 
   .table-action-icon {

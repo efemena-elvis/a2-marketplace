@@ -72,7 +72,7 @@ const handleAccountVerification = async () => {
     },
   });
 
-  if (response.status === 200) {
+  if (response.status === 201 || response.status === 200) {
     setTimeout(() => {
       location.href = "/login";
     }, 2000);

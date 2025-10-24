@@ -7,7 +7,7 @@
     :show-secondary-action="false"
     :is-primary-loading="isSubmitting"
     :is-secondary-loading="false"
-    primary-action-text="Submit Selected to FIRS"
+    primary-action-text="Submit Selected invoice(s)"
     @primary-action-clicked="handleBulkSubmit"
   />
 
@@ -134,7 +134,7 @@ const validInvoicesForTable = computed(() =>
           handleSingleSubmit(invoice.id);
         },
       },
-      "Submit to FIRS"
+      "Submit Invoice"
     ),
   }))
 );
@@ -170,16 +170,6 @@ const fetchInvoices = async () => {
           irn: "INV...1A2B",
           date: "2025-10-07",
           amount: 150000,
-          currency_code: "NGN",
-          status: "Pending Validation",
-        },
-        {
-          id: "2",
-          number: "INV-0155",
-          customerName: "Global Exports",
-          irn: "INV...3C4D",
-          date: "2025-10-07",
-          amount: 275000,
           currency_code: "NGN",
           status: "Pending Validation",
         },

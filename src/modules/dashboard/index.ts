@@ -25,8 +25,8 @@ const dashboardRoutes: IRouteType[] = [
         },
       },
       {
-        path: "/invoice-irn",
-        name: "InvoiceIRN",
+        path: "/invoice-imports",
+        name: "InvoiceImports",
         component: () =>
           import(
             /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/pages/invoice-irn.vue"

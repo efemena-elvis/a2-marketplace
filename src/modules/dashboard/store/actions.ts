@@ -43,7 +43,7 @@ export function useDashboardActions() {
     }
 
     // TEMP
-    mutateImportedInvoices(imported_invoices);
+    // mutateImportedInvoices(imported_invoices);
 
     return {
       data: {
@@ -68,7 +68,7 @@ export function useDashboardActions() {
     }
 
     // TEMP
-    mutateTransformedInvoices(response.data || {}, invoiceId);
+    // mutateTransformedInvoices(response.data || {}, invoiceId);
 
     return response;
   };
@@ -90,7 +90,7 @@ export function useDashboardActions() {
     }
 
     // TEMP
-    mutateSubmittedInvoices(invoice.invoice_id);
+    // mutateSubmittedInvoices(invoice.invoice_id);
 
     return response;
   };

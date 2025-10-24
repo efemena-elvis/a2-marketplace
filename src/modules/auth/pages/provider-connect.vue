@@ -9,8 +9,6 @@
 
     <!-- Render the main application content when loading is false -->
     <router-view v-else />
-
-    <!-- Your ToastCard component would likely live here as well -->
   </div>
 </template>
 
@@ -22,6 +20,9 @@ import { useAuthStore } from "@/modules/auth/store";
 import useEvents from "@/shared/composables/useEvents";
 import { useProfile } from "@/shared/composables/useProfile";
 import { useStorage } from "@/shared/composables/useStorage";
+import constants from "@/utilities/constants";
+
+const { ZOHO_SERVICE_PROVIDER } = constants;
 
 const route = useRoute();
 const { providerConnect } = useAuthStore();
@@ -39,7 +40,6 @@ const handlerProviderAuth = async () => {
     action: providerConnect,
     payload: {
       code: route.query.code,
-      // state: route.query?.state ?? "testing",
       company_id: companyId,
     },
     showAlert: false,
@@ -47,8 +47,9 @@ const handlerProviderAuth = async () => {
 
   if (response.status === 200) {
     setStorage({
-      storage_name: "ZOHO_API_KEY",
-      storage_value: response.data.data.access_token,
+      storage_name: ZOHO_SERVICE_PROVIDER,
+      storage_value: response.data.data,
+      storage_type: "object",
     });
 
     setTimeout(() => (location.href = "/dashboard"), 100);

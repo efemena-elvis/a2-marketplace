@@ -17,10 +17,10 @@
     <DashboardChart :daily-sync-data="dailySyncData" />
 
     <!-- SECTION 3: RECENT ACTIVITY -->
-    <RecentActivity
+    <!-- <RecentActivity
       :recent-invoices="recentInvoices"
       :is-loading="isFetchingRecentInvoices"
-    />
+    /> -->
   </div>
 
   <LoadApiKeys />
@@ -30,7 +30,7 @@
 import { ref, onMounted } from "vue";
 import StatCard from "../components/stat-card..vue";
 import DashboardChart from "../components/dashboard-chart.vue";
-import RecentActivity from "../components/recent-activity.vue";
+// import RecentActivity from "../components/recent-activity.vue";
 import LoadApiKeys from "../components/load-api-keys.vue";
 
 // --- INTERFACES AND TYPES ---

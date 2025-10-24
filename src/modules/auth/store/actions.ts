@@ -24,10 +24,7 @@ export function useAuthActions() {
 
       const normalizedPayload = {
         ...data,
-        user: {
-          ...data.user,
-          company_name: "BlackRock Limited",
-        },
+        user: { ...data.user },
         service_providers: [...data.service_providers],
       };
 

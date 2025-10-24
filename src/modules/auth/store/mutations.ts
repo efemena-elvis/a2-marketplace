@@ -57,13 +57,15 @@ export function useAuthMutations() {
   const mutateServiceProvider = (payload: any) => {
     const { service_providers } = payload;
 
-    zohoServiceProvider.value = service_providers.find(
-      (item: any) => item.provider_name === "Zoho"
-    );
+    if (service_providers.length > 0) {
+      zohoServiceProvider.value = service_providers.find(
+        (item: any) => item.provider_name === "Zoho"
+      );
+    }
 
     setStorage({
       storage_name: ZOHO_SERVICE_PROVIDER,
-      storage_value: zohoServiceProvider.value,
+      storage_value: zohoServiceProvider.value || {},
       storage_type: "object",
     });
   };

@@ -58,13 +58,13 @@
               </button>
               <!-- @click="openConnectModal" -->
 
-              <button
+              <!-- <button
                 v-else
                 class="btn btn-alert btn-sm"
                 @click="openDisconnectModal"
               >
                 Disconnect
-              </button>
+              </button> -->
             </div>
           </div>
           <!-- Add other providers here in the future (e.g., QuickBooks, Sage) -->
@@ -165,15 +165,20 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { useAuthGetters } from "@/modules/auth/store/getters";
 import ModalDialog from "@/shared/components/global-comps/modal-dialog.vue";
 import TextFieldInput from "@/shared/components/form-comps/text-field-input.vue";
 import constants from "@/utilities/constants";
+
+const { ZOHO_SERVICE_PROVIDER } = constants;
 
 // --- REACTIVE STATE ---
 const hasApiKey = ref(true); // This will determine if the "Connect" button is enabled
 const isConnecting = ref(false);
 const showConnectModal = ref(false);
 const showDisconnectModal = ref(false);
+
+const { getZohoServiceProvider } = useAuthGetters();
 
 const zohoConnection = ref({
   isConnected: false,
@@ -205,9 +210,9 @@ const fetchProviderStatus = async () => {
     // In a real app: const data = await apiFetch('/app/settings/providers');
     // zohoConnection.value.isConnected = data.zoho.isConnected;
 
-    const zohoApiKey = localStorage.getItem("ZOHO_API_KEY");
+    const zohoServiceProvider = getZohoServiceProvider.value;
 
-    if (zohoApiKey) {
+    if (Object.keys(zohoServiceProvider).length > 0) {
       zohoConnection.value.isConnected = true;
     }
   } catch (error) {

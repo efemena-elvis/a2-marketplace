@@ -23,7 +23,7 @@
     /> -->
   </div>
 
-  <LoadApiKeys />
+  <!-- <LoadApiKeys /> -->
 </template>
 
 <script setup lang="ts">
@@ -31,7 +31,7 @@ import { ref, onMounted } from "vue";
 import StatCard from "../components/stat-card..vue";
 import DashboardChart from "../components/dashboard-chart.vue";
 // import RecentActivity from "../components/recent-activity.vue";
-import LoadApiKeys from "../components/load-api-keys.vue";
+// import LoadApiKeys from "../components/load-api-keys.vue";
 
 // --- INTERFACES AND TYPES ---
 interface Invoice {

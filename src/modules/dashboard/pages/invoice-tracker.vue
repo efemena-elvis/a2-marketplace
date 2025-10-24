@@ -7,7 +7,7 @@
     <!-- TABLE SECTION -->
     <div class="table-section">
       <!-- TABS -->
-      <div class="tabs-container">
+      <!-- <div class="tabs-container">
         <button
           @click="setActiveTab('pending')"
           :class="['tab-item', { 'tab-item--active': activeTab === 'pending' }]"
@@ -34,7 +34,7 @@
         >
           Rejected
         </button>
-      </div>
+      </div> -->
 
       <!-- FILTER BAR -->
       <FilterBar />
@@ -77,20 +77,11 @@ import TableContainer from "@/shared/components/table-comps/table-container.vue"
 import TableContainerBody from "@/shared/components/table-comps/table-container-body.vue";
 import FilterBar from "../components/filter-bar.vue";
 import Pagination from "@/shared/components/global-comps/pagination.vue";
+import { useDashboardStore } from "@/modules/dashboard/store";
+import { Invoice } from "@/models/invoice-type";
+import { storeToRefs } from "pinia";
 
 // --- INTERFACES AND TYPES ---
-type InvoiceStatus = "Awaiting FIRS" | "Approved" | "Rejected";
-interface Invoice {
-  id: string;
-  number: string;
-  customerName: string;
-  irn: string;
-  submissionDate: string;
-  amount: number;
-  currency_code: string;
-  status: InvoiceStatus;
-  rejectionReason?: string;
-}
 interface IPaging {
   current_page: number;
   page_count: number;
@@ -99,7 +90,9 @@ interface IPaging {
 }
 
 // --- COMPOSABLES ---
-const { getBoldTableText, getStatus } = useString();
+const { getBoldTableText, getStatus, maskCode, formatNumber } = useString();
+
+const { submittedInvoices } = storeToRefs(useDashboardStore());
 
 // --- REACTIVE STATE ---
 const isFetchingInvoices = ref(true);
@@ -144,9 +137,9 @@ const paginationDescription = computed(() => {
 // --- TABLE CONFIGURATION ---
 const baseTableHeader = [
   { slug: "number", title: "Invoice #" },
-  { slug: "customerName", title: "Customer Name" },
+  { slug: "customer", title: "Customer Name" },
+  { slug: "amount", title: "Amount" },
   { slug: "irn", title: "IRN #" },
-  { slug: "submissionDate", title: "Submission Date" },
   { slug: "status", title: "Status" },
 ];
 
@@ -170,23 +163,31 @@ const emptyDataConfig = computed(() => ({
   description: `Invoices with the status "${activeTab.value}" will appear here.`,
 }));
 
+const getInvoiceDate = (date: string) => {
+  let { m4, d3, y1 } = dateUtil.formatDate(date).getAll();
+  return `${m4} ${d3}, ${y1}`;
+};
+
 // --- COMPUTED PROPERTIES ---
 const invoicesForTable = computed(() => {
   return rawInvoices.value.map((invoice) => ({
-    id: invoice.id,
-    number: getBoldTableText(invoice.number),
-    customerName: invoice.customerName,
-    irn: invoice.irn,
-    submissionDate: formatDate(invoice.submissionDate),
+    id: invoice.invoice_id,
+    date: getInvoiceDate(invoice.date),
+    number: getBoldTableText(invoice.invoice_number),
+    customer: invoice.customer_name,
+    irn: maskCode(invoice.transformed_invoice.irn) || "------",
+    amount: getBoldTableText(
+      `${invoice.currency_code} ${formatNumber(invoice.total)}`
+    ),
     status: getStatus(
       invoice.status === "Approved"
         ? "success"
         : invoice.status === "Rejected"
           ? "failed"
           : "pending",
-      invoice.status
+      "Awaiting FIRS"
     ),
-    rejectionReason: `<span class="text-red-600">${invoice.rejectionReason || ""}</span>`,
+    rejectionReason: `<span class="text-red-600">${""}</span>`,
   }));
 });
 
@@ -202,77 +203,52 @@ watch(activeTab, (newTab) => {
 const fetchInvoices = async (tab: "pending" | "approved" | "rejected") => {
   isFetchingInvoices.value = true;
   try {
-    // In a real app: const data = await apiFetch(`/tracker?status=${tab}&page=1`);
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    let mockApiResponse;
+
+    const mockApiResponse = {
+      invoices: submittedInvoices.value || [],
+      pagination: {
+        current_page: 1,
+        page_count: 2,
+        total_pages_count: 1,
+        total_records: 2,
+      },
+    };
 
     // Mock data for each tab
-    if (tab === "pending") {
-      mockApiResponse = {
-        invoices: [
-          {
-            id: "1",
-            number: "INV-0156",
-            customerName: "Tech Solutions Ltd",
-            irn: "INV...1A2B",
-            submissionDate: "2025-10-08T10:00:00Z",
-            amount: 150000,
-            currency_code: "NGN",
-            status: "Awaiting FIRS",
-          },
-        ],
-        pagination: {
-          current_page: 1,
-          page_count: 1,
-          total_pages_count: 1,
-          total_records: 1,
-        },
-      };
-    } else if (tab === "approved") {
-      mockApiResponse = {
-        invoices: [
-          {
-            id: "2",
-            number: "INV-0150",
-            customerName: "Global Exports",
-            irn: "INV...ABCD",
-            submissionDate: "2025-10-07T11:00:00Z",
-            amount: 275000,
-            currency_code: "NGN",
-            status: "Approved",
-          },
-        ],
-        pagination: {
-          current_page: 1,
-          page_count: 1,
-          total_pages_count: 1,
-          total_records: 1,
-        },
-      };
-    } else {
-      // Rejected
-      mockApiResponse = {
-        invoices: [
-          {
-            id: "3",
-            number: "INV-0145",
-            customerName: "Innovate Inc.",
-            irn: "INV...EFGH",
-            submissionDate: "2025-10-06T09:00:00Z",
-            amount: 95000,
-            currency_code: "NGN",
-            status: "Rejected",
-            rejectionReason: "Invalid VAT calculation.",
-          },
-        ],
-        pagination: {
-          current_page: 1,
-          page_count: 1,
-          total_pages_count: 1,
-          total_records: 1,
-        },
-      };
-    }
+    // if (tab === "pending") {
+    //   mockApiResponse = {
+    //     invoices: submittedInvoices || [],
+    //     pagination: {
+    //       current_page: 1,
+    //       page_count: 1,
+    //       total_pages_count: 1,
+    //       total_records: 1,
+    //     },
+    //   };
+    // } else if (tab === "approved") {
+    //   mockApiResponse = {
+    //     invoices: [],
+    //     pagination: {
+    //       current_page: 1,
+    //       page_count: 1,
+    //       total_pages_count: 1,
+    //       total_records: 1,
+    //     },
+    //   };
+    // } else {
+    //   // Rejected
+    //   mockApiResponse = {
+    //     invoices: [],
+    //     pagination: {
+    //       current_page: 1,
+    //       page_count: 1,
+    //       total_pages_count: 1,
+    //       total_records: 1,
+    //     },
+    //   };
+    // }
+
     rawInvoices.value = mockApiResponse.invoices as Invoice[];
     paginationData.value[tab] = mockApiResponse.pagination;
   } catch (error) {
@@ -286,12 +262,6 @@ const fetchInvoices = async (tab: "pending" | "approved" | "rejected") => {
 onMounted(() => {
   fetchInvoices("pending");
 });
-
-// --- HELPER FUNCTIONS ---
-const formatDate = (isoString: string) => {
-  const { d3, m4, y1 } = dateUtil.formatDate(isoString).getAll();
-  return `${d3} ${m4}, ${y1}`;
-};
 </script>
 
 <style lang="scss" scoped>

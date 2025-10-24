@@ -18,64 +18,6 @@ interface InvoiceCustomField {
   [key: string]: any;
 }
 
-export interface ImportedInvoice {
-  ach_payment_initiated: boolean;
-  invoice_id: string;
-  zcrm_potential_id: string;
-  customer_id: string;
-  zcrm_potential_name: string;
-  customer_name: string;
-  company_name: string;
-  status: string;
-  invoice_number: string;
-  reference_number: string;
-  date: string;
-  due_date: string;
-  due_days: string;
-  email: string;
-  project_name: string;
-  billing_address: InvoiceAddress;
-  shipping_address: InvoiceAddress;
-  country: string;
-  phone: string;
-  created_by: string;
-  total: number;
-  balance: number;
-  payment_expected_date: string;
-  custom_fields: InvoiceCustomField[];
-  custom_field_hash: Record<string, any>;
-  salesperson_name: string;
-  shipping_charge: number;
-  adjustment: number;
-  created_time: string;
-  last_modified_time: string;
-  updated_time: string;
-  is_viewed_by_client: boolean;
-  has_attachment: boolean;
-  client_viewed_time: string;
-  is_emailed: boolean;
-  color_code: string;
-  current_sub_status_id: string;
-  current_sub_status: string;
-  currency_id: string;
-  schedule_time: string;
-  currency_code: string;
-  currency_symbol: string;
-  template_type: string;
-  no_of_copies: number;
-  show_no_of_copies: boolean;
-  transaction_type: string;
-  reminders_sent: number;
-  last_reminder_sent_date: string;
-  last_payment_date: string;
-  template_id: string;
-  documents: string;
-  salesperson_id: string;
-  write_off_amount: number;
-  exchange_rate: number;
-  unprocessed_payment_amount: number;
-}
-
 ////////////////////////////////////////////
 ////// TRANSFORMED INVOICE /////////////////
 ////////////////////////////////////////////
@@ -143,7 +85,7 @@ export interface InvoiceLine {
   price: InvoicePrice;
 }
 
-export interface TransformedInvoice {
+export interface PreTransformedInvoice {
   business_id: string;
   irn: string;
   issue_date: string;
@@ -162,4 +104,63 @@ export interface TransformedInvoice {
   tax_total: TaxTotal[];
   legal_monetary_total: LegalMonetaryTotal;
   invoice_line: InvoiceLine[];
+}
+
+export interface Invoice {
+  ach_payment_initiated: boolean;
+  invoice_id: string;
+  zcrm_potential_id: string;
+  customer_id: string;
+  zcrm_potential_name: string;
+  customer_name: string;
+  company_name: string;
+  status: string;
+  invoice_number: string;
+  reference_number: string;
+  date: string;
+  due_date: string;
+  due_days: string;
+  email: string;
+  project_name: string;
+  billing_address: InvoiceAddress;
+  shipping_address: InvoiceAddress;
+  country: string;
+  phone: string;
+  created_by: string;
+  total: number;
+  balance: number;
+  payment_expected_date: string;
+  custom_fields: InvoiceCustomField[];
+  custom_field_hash: Record<string, any>;
+  salesperson_name: string;
+  shipping_charge: number;
+  adjustment: number;
+  created_time: string;
+  last_modified_time: string;
+  updated_time: string;
+  is_viewed_by_client: boolean;
+  has_attachment: boolean;
+  client_viewed_time: string;
+  is_emailed: boolean;
+  color_code: string;
+  current_sub_status_id: string;
+  current_sub_status: string;
+  currency_id: string;
+  schedule_time: string;
+  currency_code: string;
+  currency_symbol: string;
+  template_type: string;
+  no_of_copies: number;
+  show_no_of_copies: boolean;
+  transaction_type: string;
+  reminders_sent: number;
+  last_reminder_sent_date: string;
+  last_payment_date: string;
+  template_id: string;
+  documents: string;
+  salesperson_id: string;
+  write_off_amount: number;
+  exchange_rate: number;
+  unprocessed_payment_amount: number;
+  transformed_invoice: PreTransformedInvoice;
 }

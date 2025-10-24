@@ -8,8 +8,11 @@ import { imported_invoices } from "@/utilities/invoices";
 export function useDashboardActions() {
   const { getStorage } = useStorage();
   const { API_BASE_URL, APP_AUTH_TOKEN, ZOHO_SERVICE_PROVIDER } = constants;
-  const { mutateImportedInvoices, mutateTransformedInvoices } =
-    useDashboardMutations();
+  const {
+    mutateImportedInvoices,
+    mutateTransformedInvoices,
+    mutateSubmittedInvoices,
+  } = useDashboardMutations();
 
   const $api = new useServiceAPI({
     API_BASE_URL: API_BASE_URL,
@@ -33,10 +36,14 @@ export function useDashboardActions() {
     });
 
     // MUTATE RESPONSE
+
     if (response.status === 200) {
       mutateImportedInvoices(response.data.data.imported);
       return response.data;
     }
+
+    // TEMP
+    mutateImportedInvoices(imported_invoices);
 
     return {
       data: {
@@ -45,19 +52,52 @@ export function useDashboardActions() {
     };
   };
 
-  const transformInvoice = async ({ invoiceId }: { invoiceId: string }) => {
+  const transformBusinessInvoice = async ({
+    invoiceId,
+  }: {
+    invoiceId: string;
+  }) => {
     const response = await $api.push(dashboardRoutes.transformInvoice, {
       params: { invoice_id: invoiceId },
       resolve: false,
     });
 
-    console.log("TRANSFORMED INVOICE", response);
-    mutateTransformedInvoices(response.data, invoiceId);
+    if (response.status === 200) {
+      mutateTransformedInvoices(response.data, invoiceId);
+      return response.data;
+    }
+
+    // TEMP
+    mutateTransformedInvoices(response.data || {}, invoiceId);
+
+    return response;
+  };
+
+  const submitBusinessInvoice = async (payload: any) => {
+    const { invoice } = payload;
+
+    const response = await $api.push(
+      dashboardRoutes.submitInvoice,
+      { payload: invoice.transformed_invoice },
+      {
+        resolve: false,
+      }
+    );
+
+    if (response.status === 200) {
+      mutateSubmittedInvoices(invoice.invoice_id);
+      return response.data;
+    }
+
+    // TEMP
+    mutateSubmittedInvoices(invoice.invoice_id);
 
     return response;
   };
 
   return {
     fetchBusinessInvoices,
+    transformBusinessInvoice,
+    submitBusinessInvoice,
   };
 }

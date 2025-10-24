@@ -59,13 +59,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, h, watch } from "vue";
+import { ref, onMounted, computed, h, watch, toRaw } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { storeToRefs } from "pinia";
 import { useString } from "@/shared/composables/useString";
 import useEvents from "@/shared/composables/useEvents";
 import dateUtil from "@/shared/composables/useDate";
 import { useDashboardStore } from "@/modules/dashboard/store";
-import { ImportedInvoice } from "@/models/invoice-type";
+import { Invoice } from "@/models/invoice-type";
 // Import all components
 import PageLayout from "@/shared/components/global-comps/page-layout.vue";
 import TableContainer from "@/shared/components/table-comps/table-container.vue";
@@ -86,7 +87,9 @@ interface IPaging {
 // --- COMPOSABLES ---
 const route = useRoute();
 
-const { fetchBusinessInvoices } = useDashboardStore();
+const { fetchBusinessInvoices, transformBusinessInvoice } = useDashboardStore();
+const { importedInvoices } = storeToRefs(useDashboardStore());
+
 const { processAPIRequest, pushToastAlert } = useEvents();
 
 const { getBoldTableText, getStatus, formatNumber } = useString();
@@ -95,7 +98,7 @@ const { getBoldTableText, getStatus, formatNumber } = useString();
 const isSyncing = ref(false);
 const isFetchingInvoices = ref(true);
 const isTransformingInvoice = ref(false);
-const rawInvoices = ref<ImportedInvoice[]>([]);
+const rawInvoices = ref<Invoice[]>([]);
 const selectedInvoices = ref<string[]>([]);
 
 const paginationData = ref<IPaging>({
@@ -114,6 +117,12 @@ watch(
   { deep: true }
 );
 
+watch(importedInvoices, (newValue) => {
+  if (newValue) {
+    rawInvoices.value = newValue as Invoice[];
+  }
+});
+
 const getInvoiceDate = (date: string) => {
   let { m4, d3, y1 } = dateUtil.formatDate(date).getAll();
   return `${m4} ${d3}, ${y1}`;
@@ -131,10 +140,8 @@ const fetchInvoices = async () => {
       payload: {},
     });
 
-    console.log("INVOICES", response.data.imported);
-
     const mockApiResponse = {
-      invoices: response.data.imported,
+      invoices: importedInvoices.value || [],
       pagination: {
         current_page: Number(page) || 1,
         page_count: 10,
@@ -143,7 +150,7 @@ const fetchInvoices = async () => {
       },
     };
 
-    rawInvoices.value = mockApiResponse.invoices as ImportedInvoice[];
+    rawInvoices.value = mockApiResponse.invoices as Invoice[];
     paginationData.value = mockApiResponse.pagination;
   } catch (error) {
     console.error("Failed to fetch invoices:", error);
@@ -156,9 +163,7 @@ const fetchInvoices = async () => {
 
 const handleManualSync = async () => {
   isSyncing.value = true;
-  console.log("Manual sync triggered!");
-  await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate sync
-  await fetchInvoices(); // Re-fetch the list after sync
+  await fetchInvoices();
   isSyncing.value = false;
 };
 
@@ -173,16 +178,21 @@ const transformInvoice = async (invoiceId: string) => {
 
   try {
     const response = await processAPIRequest({
-      action: fetchBusinessInvoices,
+      action: transformBusinessInvoice,
       payload: { invoiceId },
     });
 
-    if (response.status === 200) {
-      pushToastAlert({
-        type: "success",
-        message: `Invoice transformed successfully!`,
-      });
-    }
+    pushToastAlert({
+      type: "success",
+      message: `Invoice transformed successfully!`,
+    });
+
+    // if (response.status === 200) {
+    //   pushToastAlert({
+    //     type: "success",
+    //     message: `Invoice transformed successfully!`,
+    //   });
+    // }
   } catch (error) {
     console.error("Failed to generate IRN:", error);
   } finally {

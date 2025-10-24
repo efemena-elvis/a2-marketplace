@@ -45,26 +45,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, h } from "vue";
+import { ref, onMounted, computed, h, toRaw, watch } from "vue";
+import { storeToRefs } from "pinia";
 import { useString } from "@/shared/composables/useString";
+import dateUtil from "@/shared/composables/useDate";
 import TableContainer from "@/shared/components/table-comps/table-container.vue";
 import TableContainerBody from "@/shared/components/table-comps/table-container-body.vue";
 import Pagination from "@/shared/components/global-comps/pagination.vue";
 import ContextualActionBar from "../components/contextual-action-bar.vue";
+import TableActionBtn from "@/shared/components/table-comps/table-action-btn.vue";
+import { useDashboardStore } from "@/modules/dashboard/store";
+import { Invoice } from "@/models/invoice-type";
+import useEvents from "@/shared/composables/useEvents";
 
 // --- INTERFACES AND TYPES ---
-type InvoiceStatus = "Pending Validation" | "Invalid";
-interface Invoice {
-  id: string;
-  number: string;
-  customerName: string;
-  irn: string;
-  date: string;
-  amount: number;
-  currency_code: string;
-  status: InvoiceStatus;
-  errorReason?: string;
-}
 interface IPaging {
   current_page: number;
   page_count: number;
@@ -73,7 +67,12 @@ interface IPaging {
 }
 
 // --- COMPOSABLES ---
-const { getBoldTableText } = useString();
+const { getBoldTableText, maskCode, formatNumber } = useString();
+
+const { submitBusinessInvoice } = useDashboardStore();
+const { transformedInvoices } = storeToRefs(useDashboardStore());
+
+const { processAPIRequest, pushToastAlert } = useEvents();
 
 // --- REACTIVE STATE ---
 const isFetchingInvoices = ref(true);
@@ -96,11 +95,11 @@ const validPaginationDesc = computed(
 
 // --- TABLE CONFIGURATION ---
 const validTableHeader = ref([
-  { slug: "number", title: "Invoice #" },
-  { slug: "customerName", title: "Customer" },
-  { slug: "irn", title: "IRN" },
   { slug: "date", title: "Date" },
+  { slug: "number", title: "Invoice #" },
+  { slug: "customer", title: "Customer Name" },
   { slug: "amount", title: "Amount" },
+  { slug: "irn", title: "IRN" },
   { slug: "action", title: "Action" },
 ]);
 
@@ -117,25 +116,32 @@ const isAllValidSelected = computed(
     selectedInvoices.value.length === rawValidInvoices.value.length
 );
 
+const getInvoiceDate = (date: string) => {
+  let { m4, d3, y1 } = dateUtil.formatDate(date).getAll();
+  return `${m4} ${d3}, ${y1}`;
+};
+
 const validInvoicesForTable = computed(() =>
   rawValidInvoices.value.map((invoice) => ({
-    id: invoice.id,
-    number: getBoldTableText(invoice.number),
-    customerName: invoice.customerName,
-    irn: invoice.irn,
-    date: formatDate(invoice.date),
-    amount: formatCurrency(invoice.amount, invoice.currency_code),
-    action: h(
-      "button",
-      {
-        class: "btn btn-primary btn-sm",
-        onClick: (e: Event) => {
-          e.stopPropagation();
-          handleSingleSubmit(invoice.id);
-        },
-      },
-      "Submit Invoice"
+    id: invoice.invoice_id,
+    date: getInvoiceDate(invoice.date),
+    number: getBoldTableText(invoice.invoice_number),
+    customer: invoice.customer_name,
+    irn: maskCode(invoice.transformed_invoice.irn) || "------",
+    amount: getBoldTableText(
+      `${invoice.currency_code} ${formatNumber(invoice.total)}`
     ),
+    action: h(TableActionBtn, {
+      showPrimaryBtn: true,
+      showSecondaryBtn: true,
+      showSecondaryText: true,
+      primaryBtnText: "Submit Invoice",
+      secondaryBtnText: "View QRCode",
+      secondaryBtnIcon: "",
+      isSecondaryActionDelete: false,
+      onPrimaryActionClicked: () => handleSingleSubmit(invoice),
+      onSecondaryActionClicked: () => {},
+    }),
   }))
 );
 
@@ -151,29 +157,19 @@ const toggleSelection = (invoiceId: string) => {
 
 const toggleSelectAll = (event: boolean): void => {
   selectedInvoices.value = event
-    ? rawValidInvoices.value.map((inv) => inv.id)
+    ? rawValidInvoices.value.map((inv) => inv.invoice_id)
     : [];
 };
 
 const fetchInvoices = async () => {
   isFetchingInvoices.value = true;
   selectedInvoices.value = [];
+
   try {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const mockApiResponse = {
-      invoices: [
-        {
-          id: "1",
-          number: "INV-0156",
-          customerName: "Tech Solutions Ltd",
-          irn: "INV...1A2B",
-          date: "2025-10-07",
-          amount: 150000,
-          currency_code: "NGN",
-          status: "Pending Validation",
-        },
-      ],
+      invoices: transformedInvoices.value || [],
       pagination: {
         current_page: 1,
         page_count: 2,
@@ -190,26 +186,34 @@ const fetchInvoices = async () => {
   }
 };
 
-const handleSingleSubmit = async (invoiceId: string) => {
-  await submitToFirs([invoiceId]);
+const handleSingleSubmit = async (invoice: Invoice) => {
+  await submitToFirs(invoice);
 };
 
 const handleBulkSubmit = async () => {
-  await submitToFirs(selectedInvoices.value);
+  // await submitToFirs(selectedInvoices);
 };
 
-const submitToFirs = async (invoiceIds: string[]) => {
+const submitToFirs = async (invoice: Invoice) => {
   isSubmitting.value = true;
+
   try {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    rawValidInvoices.value = rawValidInvoices.value.filter(
-      (inv) => !invoiceIds.includes(inv.id)
-    );
-    validPaginationData.value.total_records -= invoiceIds.length;
-    selectedInvoices.value = [];
-    alert(
-      `Successfully submitted ${invoiceIds.length} invoice(s) to FIRS. They have been moved to the Invoice Tracker.`
-    );
+    const response = await processAPIRequest({
+      action: submitBusinessInvoice,
+      payload: { invoice },
+    });
+
+    pushToastAlert({
+      type: "success",
+      message: `Invoice submitted successfully!`,
+    });
+
+    // if (response.status === 200) {
+    //   pushToastAlert({
+    //     type: "success",
+    //     message: `Invoice submitted successfully!`,
+    //   });
+    // }
   } catch (error) {
     console.error("Failed to submit to FIRS:", error);
   } finally {
@@ -221,18 +225,11 @@ onMounted(() => {
   fetchInvoices();
 });
 
-// --- HELPER FUNCTIONS ---
-const formatCurrency = (value: number, currencyCode: string) =>
-  new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: currencyCode,
-  }).format(value);
-
-const formatDate = (dateString: string) =>
-  new Date(dateString).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-  });
+watch(transformedInvoices, (newValue) => {
+  if (newValue) {
+    rawValidInvoices.value = newValue as Invoice[];
+  }
+});
 </script>
 
 <style lang="scss" scoped>

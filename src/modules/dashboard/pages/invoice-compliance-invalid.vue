@@ -113,17 +113,17 @@ const fetchInvoices = async () => {
 
     const mockApiResponse = {
       invoices: [
-        {
-          id: "3",
-          number: "INV-0154",
-          customerName: "Innovate Inc.",
-          irn: "INV...5E6F",
-          date: "2025-10-06",
-          amount: 95000,
-          currency_code: "NGN",
-          status: "Invalid",
-          errorReason: "Customer TIN is missing.",
-        },
+        // {
+        //   id: "3",
+        //   number: "INV-0154",
+        //   customerName: "Innovate Inc.",
+        //   irn: "INV...5E6F",
+        //   date: "2025-10-06",
+        //   amount: 95000,
+        //   currency_code: "NGN",
+        //   status: "Invalid",
+        //   errorReason: "Customer TIN is missing.",
+        // },
       ],
       pagination: {
         current_page: 1,

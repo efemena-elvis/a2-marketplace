@@ -1,3 +1,4 @@
+import { toRaw } from "vue";
 import { useDashboardState } from "./state";
 import { useStorage } from "@/shared/composables/useStorage";
 import constants from "@/utilities/constants";
@@ -10,21 +11,21 @@ export function useDashboardMutations() {
   const { importedInvoices, transformedInvoices, submittedInvoices } =
     useDashboardState();
 
-  // Ensure all are arrays to safely iterate
-  const imported = Array.isArray(importedInvoices.value)
-    ? importedInvoices.value
-    : [];
-  const transformed = Array.isArray(transformedInvoices.value)
-    ? transformedInvoices.value
-    : [];
-  const submitted = Array.isArray(submittedInvoices.value)
-    ? submittedInvoices.value
-    : [];
-
   // MUTATE IMPORTED INVOICES
   const mutateImportedInvoices = async (payload: any[]) => {
     try {
       if (!Array.isArray(payload) || payload.length === 0) return;
+
+      // Ensure all are arrays to safely iterate
+      const imported = Array.isArray(importedInvoices.value)
+        ? importedInvoices.value
+        : [];
+      const transformed = Array.isArray(transformedInvoices.value)
+        ? transformedInvoices.value
+        : [];
+      const submitted = Array.isArray(submittedInvoices.value)
+        ? submittedInvoices.value
+        : [];
 
       // Combine all existing IDs for duplicate check
       const existingIds = new Set([
@@ -59,7 +60,17 @@ export function useDashboardMutations() {
 
   const mutateTransformedInvoices = async (payload: any, invoiceId: string) => {
     try {
-      if (!payload || !invoiceId) return;
+      if (!invoiceId) return;
+
+      // Ensure all are arrays to safely iterate
+      const imported = Array.isArray(importedInvoices.value)
+        ? importedInvoices.value
+        : [];
+      const transformed = Array.isArray(transformedInvoices.value)
+        ? transformedInvoices.value
+        : [];
+
+      const getInvoice = imported.find((inv) => inv.invoice_id === invoiceId);
 
       // Step 1: Remove invoice from imported list
       const updatedImportedInvoices = imported.filter(
@@ -67,7 +78,10 @@ export function useDashboardMutations() {
       );
 
       // Step 2: Add payload into transformed list
-      const updatedTransformedInvoices = [...transformed, payload];
+      const updatedTransformedInvoices = [
+        ...transformed,
+        { ...getInvoice, transformed_invoice: payload },
+      ];
 
       // Step 3: Update reactive states
       importedInvoices.value = updatedImportedInvoices;
@@ -90,30 +104,42 @@ export function useDashboardMutations() {
     }
   };
 
-  const mutateSubmittedInvoices = async (payload: any, invoiceIRN: string) => {
+  const mutateSubmittedInvoices = async (invoiceId: string) => {
     try {
-      if (!payload || !invoiceIRN) return;
+      if (!invoiceId) return;
+
+      // Ensure all are arrays to safely iterate
+      const transformed = Array.isArray(transformedInvoices.value)
+        ? transformedInvoices.value
+        : [];
+      const submitted = Array.isArray(submittedInvoices.value)
+        ? submittedInvoices.value
+        : [];
+
+      const getInvoice = transformed.find(
+        (inv) => inv.invoice_id === invoiceId
+      );
 
       // Step 1: Remove from transformed list
       const updatedTransformedInvoices = transformed.filter(
-        (inv) => inv.irn !== invoiceIRN
+        (inv) => inv.invoice_id !== invoiceId
       );
 
       // Step 2: Add payload to submitted list
-      const updatedSubmittedInvoices = [...submitted, payload];
+      const updatedSubmittedInvoices = [...submitted, getInvoice];
 
       // Step 3: Update reactive states
       transformedInvoices.value = updatedTransformedInvoices;
       submittedInvoices.value = updatedSubmittedInvoices;
 
       // Step 4: Persist both to storage
-      await setStorage({
+      setStorage({
         storage_name: TRANSFORMED_INVOICES,
         storage_value: updatedTransformedInvoices,
         storage_type: "array",
       });
 
-      await setStorage({
+      setStorage({
         storage_name: SUBMITTED_INVOICES,
         storage_value: updatedSubmittedInvoices,
         storage_type: "array",

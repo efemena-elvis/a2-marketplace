@@ -79,6 +79,24 @@ const dashboardRoutes: IRouteType[] = [
           },
         ],
       },
+
+      {
+        path: "/view-invoice/:invoice_id",
+        name: "InvoiceDetailPDF",
+        component: () =>
+          import(
+            /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/pages/invoice-detail-pdf.vue"
+          ),
+        meta: {
+          requiresAuth: true,
+          title: "Invoice Detail PDF",
+          pageMeta: {
+            title: "Invoice Detail PDF",
+            description: "CISL Invoice Detail PDF",
+          },
+        },
+      },
+
       {
         path: "/invoice-tracker",
         name: "InvoiceTracker",

@@ -91,10 +91,10 @@ const fetchDashboardData = async () => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     const mockApiResponse = {
       stats: {
-        totalSynced: 156,
-        pendingIrn: 12,
-        pendingSubmission: 5,
-        approvedByFirs: 89,
+        totalSynced: 10,
+        pendingIrn: 10,
+        pendingSubmission: 0,
+        approvedByFirs: 0,
       },
       dailySync: [
         { date: "Oct 1", count: 5 },
@@ -105,26 +105,7 @@ const fetchDashboardData = async () => {
         { date: "Oct 6", count: 9 },
         { date: "Oct 7", count: 15 },
       ],
-      recentInvoices: [
-        {
-          id: "1",
-          number: "INV-0156",
-          customerName: "Tech Solutions Ltd",
-          date: "2025-10-07",
-          amount: 150000,
-          currency_code: "NGN",
-          status: "Pending IRN",
-        },
-        {
-          id: "2",
-          number: "INV-0155",
-          customerName: "Global Exports",
-          date: "2025-10-07",
-          amount: 275000,
-          currency_code: "NGN",
-          status: "Pending IRN",
-        },
-      ],
+      recentInvoices: [],
     };
 
     stats.value[0].value = mockApiResponse.stats.totalSynced;

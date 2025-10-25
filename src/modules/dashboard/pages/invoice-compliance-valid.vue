@@ -54,6 +54,7 @@ import TableContainerBody from "@/shared/components/table-comps/table-container-
 import Pagination from "@/shared/components/global-comps/pagination.vue";
 import ContextualActionBar from "../components/contextual-action-bar.vue";
 import TableActionBtn from "@/shared/components/table-comps/table-action-btn.vue";
+import TableLink from "@/shared/components/table-comps/table-link.vue";
 import { useDashboardStore } from "@/modules/dashboard/store";
 import { Invoice } from "@/models/invoice-type";
 import useEvents from "@/shared/composables/useEvents";
@@ -101,7 +102,8 @@ const validTableHeader = ref([
   { slug: "number", title: "Invoice #" },
   { slug: "customer", title: "Customer Name" },
   { slug: "amount", title: "Amount" },
-  { slug: "irn", title: "IRN" },
+  { slug: "irn", title: "IRN #" },
+  { slug: "pdf", title: "Invoice (PDF)" },
   { slug: "action", title: "Action" },
 ]);
 
@@ -133,6 +135,10 @@ const validInvoicesForTable = computed(() =>
     amount: getBoldTableText(
       `${invoice.currency_code} ${formatNumber(invoice.total)}`
     ),
+    pdf: h(TableLink, {
+      linkText: "View Invoice",
+      linkRoute: `/view-invoice/${invoice.invoice_id}`,
+    }),
     action: h(TableActionBtn, {
       key: invoice.invoice_id,
       showPrimaryBtn: true,
@@ -215,7 +221,7 @@ const submitToFirs = async (invoice: Invoice) => {
     if (response.status === 200) {
       pushToastAlert({
         type: "success",
-        message: `Invoice No: ${invoiceNumber} submitted successfully!`,
+        message: `Invoice No: ${invoiceNumber} submitted successfully to FIRS!`,
       });
     }
   } catch (error) {

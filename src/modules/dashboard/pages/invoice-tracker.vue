@@ -185,7 +185,7 @@ const invoicesForTable = computed(() => {
         : invoice.status === "Rejected"
           ? "failed"
           : "pending",
-      "Awaiting FIRS"
+      "Awaiting FIRS approval"
     ),
     rejectionReason: `<span class="text-red-600">${""}</span>`,
   }));

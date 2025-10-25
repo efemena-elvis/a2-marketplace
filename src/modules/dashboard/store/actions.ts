@@ -78,7 +78,7 @@ export function useDashboardActions() {
 
     if (response.status === 200) {
       mutateTransformedInvoices(response.data.transformed, invoiceId);
-      return response.data.transformed;
+      return response;
     }
 
     // TEMP
@@ -100,7 +100,7 @@ export function useDashboardActions() {
 
     if (response.status === 200) {
       mutateSubmittedInvoices(invoice.invoice_id);
-      return response.data;
+      return response;
     }
 
     // TEMP

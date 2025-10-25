@@ -172,8 +172,8 @@ export function useString() {
     if (typeof code !== "string") return "";
     if (code.length <= 8) return code; // skip masking if too short
 
-    const prefix = code.slice(0, 4);
-    const suffix = code.slice(-6);
+    const prefix = code.slice(0, 6);
+    const suffix = code.slice(-8);
     return `${prefix}....${suffix}`;
   };
 

@@ -98,6 +98,8 @@ const { getBoldTableText, getStatus, formatNumber } = useString();
 const isSyncing = ref(false);
 const isFetchingInvoices = ref(true);
 const isTransformingInvoice = ref(false);
+const activeInvoiceId = ref<string | null>(null);
+
 const rawInvoices = ref<Invoice[]>([]);
 const selectedInvoices = ref<string[]>([]);
 
@@ -167,14 +169,19 @@ const handleManualSync = async () => {
   isSyncing.value = false;
 };
 
-const handleSingleInvoiceTransform = async (invoiceId: string) => {
-  await transformInvoice(invoiceId);
+const handleSingleInvoiceTransform = async (invoice: Invoice) => {
+  await transformInvoice(invoice);
 };
 
 const handleBulkGenerateIRN = async () => {};
 
-const transformInvoice = async (invoiceId: string) => {
-  isTransformingInvoice.value = true;
+const transformInvoice = async (invoice: Invoice) => {
+  // isTransformingInvoice.value = true;
+
+  const invoiceId = invoice.invoice_id;
+  const invoiceNumber = invoice.invoice_number;
+
+  activeInvoiceId.value = invoiceId;
 
   try {
     const response = await processAPIRequest({
@@ -185,13 +192,14 @@ const transformInvoice = async (invoiceId: string) => {
     if (response.status === 200) {
       pushToastAlert({
         type: "success",
-        message: `Invoice transformed successfully!`,
+        message: `Invoice No: ${invoiceNumber} transformed successfully!`,
       });
     }
   } catch (error) {
     console.error("Failed to generate IRN:", error);
   } finally {
-    isTransformingInvoice.value = false;
+    // isTransformingInvoice.value = false;
+    activeInvoiceId.value = null;
   }
 };
 
@@ -242,15 +250,13 @@ const invoicesForTable = computed(() => {
     ),
     status: getStatus("pending", "Pending"),
     action: h(TableActionBtn, {
+      key: invoice.invoice_id,
       showPrimaryBtn: true,
       showSecondaryBtn: false,
-      showSecondaryText: true,
-      primaryBtnText: "Transform Invoice",
-      secondaryBtnText: "View QRCode",
-      secondaryBtnIcon: "",
+      primaryBtnText: "Transform",
       isSecondaryActionDelete: false,
-      onPrimaryActionClicked: () =>
-        handleSingleInvoiceTransform(invoice.invoice_id),
+      isActionLoading: activeInvoiceId.value === invoice.invoice_id,
+      onPrimaryActionClicked: () => handleSingleInvoiceTransform(invoice),
       onSecondaryActionClicked: () => {},
     }),
   }));

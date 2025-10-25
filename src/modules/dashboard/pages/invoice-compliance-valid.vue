@@ -77,6 +77,8 @@ const { processAPIRequest, pushToastAlert } = useEvents();
 // --- REACTIVE STATE ---
 const isFetchingInvoices = ref(true);
 const isSubmitting = ref(false);
+const activeInvoiceId = ref<string | null>(null);
+
 const rawValidInvoices = ref<Invoice[]>([]);
 const selectedInvoices = ref<string[]>([]);
 
@@ -95,7 +97,7 @@ const validPaginationDesc = computed(
 
 // --- TABLE CONFIGURATION ---
 const validTableHeader = ref([
-  { slug: "date", title: "Date" },
+  // { slug: "date", title: "Date" },
   { slug: "number", title: "Invoice #" },
   { slug: "customer", title: "Customer Name" },
   { slug: "amount", title: "Amount" },
@@ -124,7 +126,7 @@ const getInvoiceDate = (date: string) => {
 const validInvoicesForTable = computed(() =>
   rawValidInvoices.value.map((invoice) => ({
     id: invoice.invoice_id,
-    date: getInvoiceDate(invoice.date),
+    // date: getInvoiceDate(invoice.date),
     number: getBoldTableText(invoice.invoice_number),
     customer: invoice.customer_name,
     irn: maskCode(invoice.transformed_invoice.irn) || "------",
@@ -132,13 +134,15 @@ const validInvoicesForTable = computed(() =>
       `${invoice.currency_code} ${formatNumber(invoice.total)}`
     ),
     action: h(TableActionBtn, {
+      key: invoice.invoice_id,
       showPrimaryBtn: true,
       showSecondaryBtn: true,
       showSecondaryText: true,
-      primaryBtnText: "Submit Invoice",
+      primaryBtnText: "Submit",
       secondaryBtnText: "View QRCode",
       secondaryBtnIcon: "",
       isSecondaryActionDelete: false,
+      isActionLoading: activeInvoiceId.value === invoice.invoice_id,
       onPrimaryActionClicked: () => handleSingleSubmit(invoice),
       onSecondaryActionClicked: () => {},
     }),
@@ -195,7 +199,12 @@ const handleBulkSubmit = async () => {
 };
 
 const submitToFirs = async (invoice: Invoice) => {
-  isSubmitting.value = true;
+  // isSubmitting.value = true;
+
+  const invoiceId = invoice.invoice_id;
+  const invoiceNumber = invoice.invoice_number;
+
+  activeInvoiceId.value = invoiceId;
 
   try {
     const response = await processAPIRequest({
@@ -206,13 +215,14 @@ const submitToFirs = async (invoice: Invoice) => {
     if (response.status === 200) {
       pushToastAlert({
         type: "success",
-        message: `Invoice submitted successfully!`,
+        message: `Invoice No: ${invoiceNumber} submitted successfully!`,
       });
     }
   } catch (error) {
     console.error("Failed to submit to FIRS:", error);
   } finally {
-    isSubmitting.value = false;
+    // isSubmitting.value = false;
+    activeInvoiceId.value = null;
   }
 };
 
@@ -229,6 +239,6 @@ watch(transformedInvoices, (newValue) => {
 
 <style lang="scss" scoped>
 .pagination-container {
-  @apply pt-6 border-t border-t-grey-100;
+  @apply pt-6;
 }
 </style>

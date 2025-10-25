@@ -77,8 +77,8 @@ export function useDashboardActions() {
     );
 
     if (response.status === 200) {
-      mutateTransformedInvoices(response.data, invoiceId);
-      return response.data;
+      mutateTransformedInvoices(response.data.transformed, invoiceId);
+      return response.data.transformed;
     }
 
     // TEMP
@@ -92,7 +92,7 @@ export function useDashboardActions() {
 
     const response = await $api.push(
       dashboardRoutes.submitInvoice,
-      { payload: invoice.transformed_invoice },
+      { ...invoice.transformed_invoice },
       {
         resolve: false,
       }

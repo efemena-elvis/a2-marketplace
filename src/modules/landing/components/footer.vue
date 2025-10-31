@@ -3,7 +3,7 @@
     <div class="footer-row">
       <!-- BRAND LOGO -->
       <div class="brand-logo">
-        <img src="@/shared/assets/images/brand-logo.png" alt="a2 Marketplace" />
+        <img src="@/shared/assets/images/brand-logo.png" alt="CISL Portal" />
         <!-- <div class="brand-name">A2 Marketplace</div> -->
       </div>
 

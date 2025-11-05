@@ -3,7 +3,7 @@
     <div class="footer-row">
       <!-- BRAND LOGO -->
       <div class="brand-logo">
-        <img src="@/shared/assets/images/brand-logo.png" alt="CISL Portal" />
+        <img src="@/shared/assets/images/a2-logo.png" alt="A2 Core Portal" />
         <!-- <div class="brand-name">A2 Marketplace</div> -->
       </div>
 
@@ -63,8 +63,8 @@
     @apply flex justify-start items-center gap-x-2;
 
     img {
-      // @apply size-12 lg:size-11 sm:size-10 object-contain;
-      @apply w-[180px] h-auto;
+      @apply size-12 lg:size-11 sm:size-10 object-contain;
+      // @apply w-[180px] h-auto;
     }
 
     .brand-name {

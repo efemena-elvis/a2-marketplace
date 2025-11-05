@@ -20,7 +20,7 @@ const dashboardRoutes: IRouteType[] = [
           title: "Dashboard",
           pageMeta: {
             title: "Dashboard",
-            description: "CISL Dashboard",
+            description: "A2 Core Dashboard",
           },
         },
       },
@@ -36,7 +36,7 @@ const dashboardRoutes: IRouteType[] = [
           title: "Invoice IRN",
           pageMeta: {
             title: "Invoice IRN",
-            description: "CISL Invoice IRN",
+            description: "A2 Core Invoice IRN",
           },
         },
       },
@@ -57,7 +57,7 @@ const dashboardRoutes: IRouteType[] = [
               title: "Invoice Compliance",
               pageMeta: {
                 title: "Invoice Compliance",
-                description: "CISL Invoice Compliance",
+                description: "A2 Core Invoice Compliance",
               },
             },
           },
@@ -73,7 +73,7 @@ const dashboardRoutes: IRouteType[] = [
               title: "Invoice Compliance",
               pageMeta: {
                 title: "Invoice Compliance",
-                description: "CISL Invoice Compliance",
+                description: "A2 Core Invoice Compliance",
               },
             },
           },
@@ -92,7 +92,7 @@ const dashboardRoutes: IRouteType[] = [
           title: "Invoice Detail PDF",
           pageMeta: {
             title: "Invoice Detail PDF",
-            description: "CISL Invoice Detail PDF",
+            description: "A2 Core Invoice Detail PDF",
           },
         },
       },
@@ -109,7 +109,7 @@ const dashboardRoutes: IRouteType[] = [
           title: "Invoice Tracker",
           pageMeta: {
             title: "Invoice Tracker",
-            description: "CISL Invoice Tracker",
+            description: "A2 Core Invoice Tracker",
           },
         },
       },
@@ -126,7 +126,7 @@ const dashboardRoutes: IRouteType[] = [
           title: "Activity Logs",
           pageMeta: {
             title: "Activity Logs",
-            description: "CISL Activity Logs",
+            description: "A2 Core Activity Logs",
           },
         },
       },

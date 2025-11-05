@@ -8,7 +8,7 @@
       </div>
 
       <div class="description-text">
-        CISL helps you stay compliant; easily and seamlessly
+        A2 Core helps you stay compliant; easily and seamlessly
       </div>
 
       <div class="cta-row">
@@ -30,7 +30,7 @@
   <!-- INFO SECTION -->
   <div class="app-container info-section">
     <div class="info-text">
-      Connect your ERP or upload invoices directly. CISL validates and routes
+      Connect your ERP or upload invoices directly. A2 Core validates and routes
       them to FIRS; fast, secure, compliant.
     </div>
 

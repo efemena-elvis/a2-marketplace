@@ -8,9 +8,11 @@
         <!-- BRAND LOGO -->
         <div class="brand-logo">
           <img
-            src="@/shared/assets/images/brand-logo.png"
-            alt="CISL Marketplace"
+            src="@/shared/assets/images/a2-logo.png"
+            alt="A2 Core Marketplace"
           />
+
+          <div class="brand-name">A2 Core Marketplace</div>
         </div>
 
         <!-- NAVIGATION LINKS -->
@@ -63,8 +65,14 @@ const navLinks = ref([
 
   .brand-logo {
     @apply flex justify-start items-center gap-x-2;
+
     img {
-      @apply w-[220px] h-auto;
+      @apply size-12 lg:size-11 sm:size-10 object-contain;
+      // @apply w-[220px] h-auto;
+    }
+
+    .brand-name {
+      @apply text-primary-900 font-medium text-lg sm:text-base;
     }
   }
 

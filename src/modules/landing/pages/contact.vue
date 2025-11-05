@@ -59,8 +59,8 @@
               <p class="detail-text">
                 Our support team will get back to you within 24 hours.
               </p>
-              <a href="mailto:support@cisl.com" class="detail-link"
-                >support@cisl.com</a
+              <a href="mailto:support@a2core.com" class="detail-link"
+                >support@a2core.com</a
               >
             </div>
           </div>

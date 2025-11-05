@@ -22,7 +22,7 @@ const settingsRoutes: IRouteType[] = [
               title: "Profile",
               pageMeta: {
                 title: "Profile",
-                description: "CISL Settings Profile",
+                description: "A2 Core Settings Profile",
               },
             },
           },
@@ -36,7 +36,7 @@ const settingsRoutes: IRouteType[] = [
               title: "Contact Information",
               pageMeta: {
                 title: "Contact Information",
-                description: "CISL Settings Contact Information",
+                description: "A2 Core Settings Contact Information",
               },
             },
           },
@@ -49,7 +49,7 @@ const settingsRoutes: IRouteType[] = [
               title: "Security",
               pageMeta: {
                 title: "Security",
-                description: "CISL Settings Security",
+                description: "A2 Core Settings Security",
               },
             },
           },
@@ -62,7 +62,7 @@ const settingsRoutes: IRouteType[] = [
               title: "Providers",
               pageMeta: {
                 title: "Providers",
-                description: "CISL Settings Providers",
+                description: "A2 Core Settings Providers",
               },
             },
           },

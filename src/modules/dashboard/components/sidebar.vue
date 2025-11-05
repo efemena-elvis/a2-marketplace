@@ -2,8 +2,8 @@
   <div class="base-sidebar">
     <!-- BUSINESS LOGO -->
     <div class="business-logo">
-      <img :src="renderImg('brand-logo.png')" alt="Business Logo" />
-      <!-- <div class="brand-name">A2 Marketplace</div> -->
+      <img :src="renderImg('a2-logo.png')" alt="Business Logo" />
+      <div class="brand-name">A2 Marketplace</div>
     </div>
 
     <!-- SIDEBAR ITEMS AREA -->
@@ -47,8 +47,8 @@ const sidebarRouteList = ref<IRouteGroupType[]>(sidebarRoutes);
     @apply flex justify-start items-center gap-x-2 pt-7 px-6;
 
     img {
-      @apply w-[180px] h-auto;
-      // @apply size-10 object-contain;
+      // @apply w-[180px] h-auto;
+      @apply size-10 object-contain;
     }
 
     .brand-name {

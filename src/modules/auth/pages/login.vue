@@ -1,5 +1,5 @@
 <template>
-  <AuthWrapper title_text="Welcome to CISL">
+  <AuthWrapper title_text="Welcome to A2 Core">
     <form @submit.prevent="handleUserLogin">
       <!-- EMAIL ADDRESS -->
       <TextFieldInput

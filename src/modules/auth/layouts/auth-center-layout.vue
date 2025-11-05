@@ -9,7 +9,7 @@
 
     <div class="container-wrapper">
       <a href="/" class="brand-logo relative block mx-auto w-max mb-8">
-        <img src="@/shared/assets/images/brand-logo-icon.png" alt="cisl-logo" />
+        <img src="@/shared/assets/images/a2-logo.png" alt="a2-core-logo" />
       </a>
 
       <div class="flex justify-center items-start">

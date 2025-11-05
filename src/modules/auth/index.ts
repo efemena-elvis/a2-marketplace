@@ -84,7 +84,7 @@ const authRoutes: IRouteType[] = [
       title: "Provider Connect",
       pageMeta: {
         title: "Provider Connect",
-        description: "CISL Provider Connect",
+        description: "A2 Core Provider Connect",
       },
     },
   },

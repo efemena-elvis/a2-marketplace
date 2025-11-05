@@ -4,8 +4,8 @@
     <div class="loader-content">
       <!-- Brand Logo -->
       <img
-        :src="renderImg('brand-logo.png')"
-        alt="CISL Logo"
+        :src="renderImg('a2-logo.png')"
+        alt="A2 Core Logo"
         class="brand-logo"
       />
 

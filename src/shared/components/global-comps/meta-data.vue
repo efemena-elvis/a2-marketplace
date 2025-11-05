@@ -34,14 +34,14 @@ import { useRoute } from "vue-router";
 import { Head } from "@vueuse/head";
 
 const route = useRoute();
-const metaTitle = "CISL Portal";
+const metaTitle = "A2 Core Portal";
 const metaDescription =
   "Simplify your tax compliance in Nigeria. Our platform helps businesses easily upload, validate, and pay their tax invoices online, ensuring seamless FIRS compliance.";
 const metaKeywords =
   "E-invoicing Nigeria, FIRS compliance software, Tax payment portal Nigeria, Nigerian tax invoice validation, Pay tax online Nigeria, Business tax management Nigeria";
-const metaCompanyName = "CISL Portal";
+const metaCompanyName = "A2 Core Portal";
 const metaCompanyCreator = "Efemena Elvis";
-const metaCompanyBaseUrl = "https://cisl-portal.vercel.app";
+const metaCompanyBaseUrl = "https://a2core.vercel.app";
 
 const getMetaLocales = computed(() => ({
   current: "en",
@@ -53,7 +53,7 @@ const getTitleText = computed(() =>
 );
 
 const getMetaTitle = computed(
-  () => `${getTitleText.value} CISL Portal` || metaTitle
+  () => `${getTitleText.value} A2 Core` || metaTitle
 );
 
 const getMetaDescription = computed(() => {

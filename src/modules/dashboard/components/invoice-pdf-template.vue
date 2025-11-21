@@ -18,6 +18,9 @@
       <div class="invoice-title-section">
         <h2 class="invoice-title">INVOICE</h2>
         <p class="invoice-number">#{{ invoice.invoice_number }}</p>
+        <p class="invoice-number">
+          #IRN: {{ invoice.transformed_invoice.irn }}
+        </p>
       </div>
     </header>
 
@@ -95,7 +98,7 @@
     </section>
 
     <!-- ===== QR Code Section ===== -->
-    <section class="qr-section">
+    <!-- <section class="qr-section">
       <img
         :src="qrCodeDataUrl"
         alt="QR Code"
@@ -105,7 +108,7 @@
       <div class="qr-text">
         <p>Scan to verify invoice</p>
       </div>
-    </section>
+    </section> -->
   </div>
 </template>
 

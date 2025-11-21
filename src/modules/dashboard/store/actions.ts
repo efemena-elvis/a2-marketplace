@@ -99,6 +99,7 @@ export function useDashboardActions() {
     );
 
     if (response.status === 200) {
+      transmitBusinessInvoice(invoice.transformed_invoice.irn);
       mutateSubmittedInvoices(invoice.invoice_id);
       return response;
     }
@@ -109,9 +110,37 @@ export function useDashboardActions() {
     return response;
   };
 
+  const transmitBusinessInvoice = async (invoiceIRN: string) => {
+    return $api.push(
+      `${dashboardRoutes.transmitInvoice}/${invoiceIRN}`,
+      {},
+      {
+        resolve: false,
+      }
+    );
+  };
+
+  const getQrCode = async (invoiceIRN: string) => {
+    return $api.push(
+      dashboardRoutes.qrCode,
+      { irn: invoiceIRN },
+      {
+        resolve: false,
+      }
+    );
+  };
+
+  const fetchIncomingInvoices = async () => {
+    return $api.fetch(dashboardRoutes.incomingInvoices, {
+      resolve: false,
+    });
+  };
+
   return {
     fetchBusinessInvoices,
     transformBusinessInvoice,
     submitBusinessInvoice,
+    getQrCode,
+    fetchIncomingInvoices,
   };
 }

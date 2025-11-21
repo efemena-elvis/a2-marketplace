@@ -20,7 +20,7 @@ const dashboardRoutes: IRouteType[] = [
           title: "Dashboard",
           pageMeta: {
             title: "Dashboard",
-            description: "A2 Core Dashboard",
+            description: "CISL Dashboard",
           },
         },
       },
@@ -36,7 +36,7 @@ const dashboardRoutes: IRouteType[] = [
           title: "Invoice IRN",
           pageMeta: {
             title: "Invoice IRN",
-            description: "A2 Core Invoice IRN",
+            description: "CISL Invoice IRN",
           },
         },
       },
@@ -57,7 +57,7 @@ const dashboardRoutes: IRouteType[] = [
               title: "Invoice Compliance",
               pageMeta: {
                 title: "Invoice Compliance",
-                description: "A2 Core Invoice Compliance",
+                description: "CISL Invoice Compliance",
               },
             },
           },
@@ -73,7 +73,7 @@ const dashboardRoutes: IRouteType[] = [
               title: "Invoice Compliance",
               pageMeta: {
                 title: "Invoice Compliance",
-                description: "A2 Core Invoice Compliance",
+                description: "CISL Invoice Compliance",
               },
             },
           },
@@ -92,26 +92,64 @@ const dashboardRoutes: IRouteType[] = [
           title: "Invoice Detail PDF",
           pageMeta: {
             title: "Invoice Detail PDF",
-            description: "A2 Core Invoice Detail PDF",
+            description: "CISL Invoice Detail PDF",
           },
         },
       },
 
+      // {
+      //   path: "/invoice-tracker",
+      //   name: "InvoiceTracker",
+      //   component: () =>
+      //     import(
+      //       /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/pages/invoice-tracker.vue"
+      //     ),
+      //   meta: {
+      //     requiresAuth: true,
+      //     title: "Invoice Tracker",
+      //     pageMeta: {
+      //       title: "Invoice Tracker",
+      //       description: "CISL Invoice Tracker",
+      //     },
+      //   },
+      // },
+
       {
         path: "/invoice-tracker",
-        name: "InvoiceTracker",
         component: () =>
           import(
-            /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/pages/invoice-tracker.vue"
+            /* webpackChunkName: "dashboard-module" */ "@/modules/dashboard/layouts/invoice-tracker-layout.vue"
           ),
-        meta: {
-          requiresAuth: true,
-          title: "Invoice Tracker",
-          pageMeta: {
-            title: "Invoice Tracker",
-            description: "A2 Core Invoice Tracker",
+        children: [
+          {
+            path: "outgoing",
+            name: "InvoiceTrackerOutgoing",
+            component: () =>
+              import("@/modules/dashboard/pages/invoice-tracker-outgoing.vue"),
+            meta: {
+              requiresAuth: true,
+              title: "Outgoing Invoice",
+              pageMeta: {
+                title: "Outgoing Invoice",
+                description: "CISL Outgoing Invoice",
+              },
+            },
           },
-        },
+          {
+            path: "incoming",
+            name: "InvoiceTrackerIncoming",
+            component: () =>
+              import("@/modules/dashboard/pages/invoice-tracker-incoming.vue"),
+            meta: {
+              requiresAuth: true,
+              title: "Incoming Invoice",
+              pageMeta: {
+                title: "Incoming Invoice",
+                description: "CISL Incoming Invoice",
+              },
+            },
+          },
+        ],
       },
 
       {
@@ -126,7 +164,7 @@ const dashboardRoutes: IRouteType[] = [
           title: "Activity Logs",
           pageMeta: {
             title: "Activity Logs",
-            description: "A2 Core Activity Logs",
+            description: "CISL Activity Logs",
           },
         },
       },
